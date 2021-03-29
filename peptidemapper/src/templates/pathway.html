@@ -1,0 +1,91 @@
+{% include 'base.html' %}
+  {% load staticfiles %}
+<!--   {% load url from future %}
+  {% load crispy_forms_tags %} -->
+  <title> {% block head_title %} Pathway|UVic MRMAssayDB {% endblock %} </title>
+  {% block content %}
+    <script src="{% static 'js/jquery.dataTables.min.js' %}"></script>
+    <script src="{% static 'js/cytoscape.min.js' %}"></script>
+    <script src="{% static 'js/jquery-ui.js' %}"></script>
+    <link href="{% static 'css/jquery-ui.css' %}" rel="stylesheet">
+    <link href="{% static 'css/jquery.dataTables.min.css' %}" rel="stylesheet">
+    <style>
+      div.panel {
+          padding: 0 18px;
+          background-color: white;
+          max-height: 0;
+          overflow: hidden;
+          transition: max-height 0.2s ease-out;
+      }
+    </style>
+    <style type="text/css">
+      .modal-header {
+        background-color: #00994C;
+        color: white;
+        border-radius: 5px 5px 0px 0px;
+        margin: 0 auto;
+      }
+
+    </style>
+    <script type="text/javascript">
+      $(window).load(function(){
+        $(function() {
+          $("#mappertab").tabs();
+        });
+      });
+    </script>
+    <div id="mappertab" class="ui-tabs ui-widget ui-widget-content ui-corner-all">
+      <ul class="ui-tabs-nav ui-helper-reset ui-helper-clearfix ui-widget-header ui-corner-all">
+        <li class="ui-state-default ui-corner-top ui-tabs-selected ui-state-active"><a href="#pathway">Pathways</a></li>
+      </ul>
+      <div id="pathway" class="ui-tabs-panel ui-widget-content ui-corner-bottom">
+        {% if  pathwaysInfo|length > 0 %}
+          <script type="text/javascript">
+            $(document).ready(function() {
+              var table = $('#PathDataTable').DataTable();
+            } );
+          </script>
+          <div>
+              <table id="PathDataTable" class="display" cellspacing="0" width="100%">
+                <thead>
+                  <tr>
+                      <th>Pathway Name</th>
+                      <th>Source</th>
+                      <th>Pathway ID</th>
+                      <th>View</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for items in pathwaysInfo %}
+                    <tr>
+                      <td>{{ items.0 }}</td>
+                      <td>
+                         {% if items.4 == True %}
+                            PC:{{ items.3 }}
+                          {% else %}
+                            Kegg
+                          {% endif %}
+                      </td>
+                      <td><a target="_blank" href="{{ items.2 }}">{{ items.1 }}&nbsp;<i class="fa fa-external-link" aria-hidden="true"></i></a></td>
+                      <td>
+                        {% if items.3 == 'kegg' %}
+                          <a target="_blank" href="{% url 'pathwayview' %}?Uniprotkb={{ uniprotid }}&pathwayid={{ items.1 }}&pathwayname={{ items.0 }}&organismid={{ OSid }}"><i class="fa fa-eye"></i></a>
+                          
+                          {% else %}
+                            NA
+                          {% endif %}
+                      </td>
+                    </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            <p>Data source:<strong>KEGG</strong> </p>
+          </div>
+        {% else %}
+          <div>
+            No Data
+          </div>
+        {% endif %}
+      </div>
+    </div>
+  {% endblock %}

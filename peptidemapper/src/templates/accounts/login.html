@@ -1,0 +1,28 @@
+{%extends "base.html" %}
+    {% load i18n %}
+    {% load crispy_forms_tags %}
+    {% block head_title %} Login |{{ block.super }}{% endblock %}
+    {% block jumbotron %}
+    {% if request.user.is_authenticated %}
+    You are already logged in.
+    {% endif %}
+  {% endblock %}
+
+  {% block content %}
+  {% if not request.user.is_authenticated %}
+    <div class='row'>
+      <div class='col-sm-6 col-sm-offset-3'>
+       <form method="POST" action=".">
+       <h1> Please login before accessing resource </h1>
+          {% csrf_token %}
+          {{ form|crispy }}
+          <input class='btn btn-default', type='submit', value='{% trans "Log in" %}'>
+          <input class='btn btn-default', type='hidden', text='next', value='{{ next }}'>
+        </form>
+      </div>
+    </div>
+  {% else %}
+    <meta http-equiv="REFRESH" content="0;url=/">
+  {% endif %}
+  {% endblock %}
+

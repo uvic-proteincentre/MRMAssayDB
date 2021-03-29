@@ -1,0 +1,232 @@
+
+{% include 'base.html' %}
+{% load staticfiles %}
+<title> {% block head_title %} Disease|UVic MRMAssayDB {% endblock %} </title>
+{% block content %}
+
+	<link href="{% static 'css/jquery.dataTables.min.css' %}" rel="stylesheet">
+	<link href="{% static 'css/select.dataTables.min.css' %}" rel="stylesheet">
+	<link href="{% static 'css/buttons.dataTables.min.css' %}" rel="stylesheet">    
+	<link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet">
+	<link href="{% static 'css/navbar-fixed-top.css' %}" rel="stylesheet">
+	<!-- <link href="{% static 'css/main.css' %}" rel="stylesheet"> -->
+	<link href="http://ebi-uniprot.github.io/CDN/protvista/css/main.css" rel="stylesheet"/>
+
+	<script src="{% static 'js/jquery-1.12.0.min.js' %}"></script>
+	<script src="{% static 'js/jquery.dataTables.min.js' %}"></script>
+	<script src="{% static 'js/dataTables.select.min.js' %}"></script>
+	<script src="{% static 'js/dataTables.buttons.min.js' %}"></script>
+	<script src="{% static 'js/buttons.flash.min.js' %}"></script>
+	<script src="{% static 'js/vfs_fonts.js' %}"></script>
+	<script src="{% static 'js/buttons.html5.min.js' %}"></script>
+
+	<style type="text/css">
+		/* Style the tab */
+		div.dataTables_wrapper {
+		    margin-bottom: 3em;
+		}
+
+		body {font-family: Arial;}
+
+
+		.tab {
+		  overflow: hidden;
+		  margin: 0;
+		  padding: 0;
+		  border: 1px solid #ccc;
+		  background-color: #f1f1f1;
+		}
+
+
+		/* Style the links inside the list items */
+		.tab button {
+		  color: black;
+		  float: left;
+		  border: none;
+		  outline: none;
+		  cursor: pointer;
+		  padding: 14px 16px;
+		  transition: 0.3s;
+		  font-size: 17px;
+		}
+
+		/* Change background color of links on hover */
+		.tab button:hover {
+		    background-color: #ddd;
+		}
+
+		/* Create an active/current tablink class */
+		.tab button:focus, .active {
+		    background-color: #ccc;
+		}
+
+		/* Style the tab content */
+		.tabcontentdisease {
+		  display: none;
+		  padding: 6px 12px;
+		  border: 1px solid #ccc;
+		  border-top: none;
+		}
+		div[class*="tabcontentdisease"]:first-of-type {
+		    display: block;
+		}
+	</style>
+	<script type="text/javascript" charset="utf-8">
+	  function openTabsDis(evt, tabName) {
+	      var i, tabcontent, tablinks;
+	      tabcontent = document.getElementsByClassName("tabcontentdisease");
+	      for (i = 0; i < tabcontent.length; i++) {
+	        tabcontent[i].style.display = "none";
+	      }
+	      tablinks = document.getElementsByClassName("tablinksdisease");
+	      for (i = 0; i < tablinks.length; i++) {
+	        tablinks[i].className = tablinks[i].className.replace(" active", "");
+	      }
+	      document.getElementById(tabName).style.display = "block";
+	      evt.currentTarget.className += " active";
+	  }
+	</script>
+	<div class="container-fluid">
+		<div align="justify">
+			{% if diseasePresence > 0 %}
+				<br/>
+				<table width="50%">
+					<thead>
+						<tr>
+							<th>UniProtKB Accession</th>
+							<th>Protein</th>
+							<th>Gene</th>
+						</tr>
+					</thead>
+			 
+					<tbody>
+						<tr>
+							<td> <a target="_blank" href="https://www.uniprot.org/uniprot/{{ uniprotkb }}">{{ uniprotkb }}</a> </td> 
+							<td> {{ protname }} </td>
+							<td> {{ genename }} </td>
+						</tr>
+					</tbody>
+					<tr class="blank_row">
+						<td colspan="3"></td>
+					</tr>
+				</table>
+
+			    <br>
+			    <ul class="tab">
+			      <button class="tablinksdisease active" onclick="openTabsDis(event, 'disGen')">Involvement in disease-Human(DisGeNET)</button>
+			      <button class="tablinksdisease"  onclick="openTabsDis(event, 'uniDis')">Involvement in disease-Human(UniProt)</button>
+			    </ul>
+
+			    <div id="disGen" class="tabcontentdisease">
+			        <input id="myInputDisGenNet" type="text" onkeyup="disGenNetSearch()" placeholder="Search.." style="width: 20%;">
+					<div id="disGenNetWithoutFilter"></div>
+					<div id="disGenNetWithFilter"></div>
+			    </div>
+
+			    <div id="uniDis" class="tabcontentdisease">
+			        <input id="myInputUniProt" type="text" onkeyup="uniProtSearch()" placeholder="Search.." style="width: 20%;">
+					<div id="uniProtWithoutFilter""></div>
+					<div id="uniProtWithFilter""></div>
+			    </div>
+
+				<script type="text/javascript">
+			      var self= this;
+				  var diseaseUniProt;
+				  var diseaseDisGeNet;
+				  var diseaseUniProtArray;
+				  var diseaseDisGeNetArray;
+				  var diseaseInputData;
+				  var filterredDiseaseUniProt;
+				  var filterredDiseaseDisGeNet;
+				  self.diseaseUniProtArray={{diseaseUniProtRaw|safe}};
+				  self.diseaseUniProt=self.diseaseUniProtArray.join('; ');
+				  self.diseaseDisGeNetArray={{diseaseDisGeNetRaw|safe}};
+				  self.diseaseDisGeNet=self.diseaseDisGeNetArray.join('; ');
+				  console.log(self.diseaseUniProt);
+				  document.getElementById("disGenNetWithoutFilter").innerHTML=self.diseaseDisGeNet;
+				  document.getElementById("uniProtWithoutFilter").innerHTML=self.diseaseUniProt;
+
+				  function uniProtSearch(){
+			        const valueUniProt = document.getElementById("myInputUniProt").value.toString().toLowerCase();
+			        if (valueUniProt.trim().length > 0){
+			          const textArrayUniProt=self.diseaseUniProtArray;
+			          let textContentUniProt=[];
+			          for(let i=0; i < textArrayUniProt.length; i++){
+			              const strUniProt = textArrayUniProt[i];
+			              const divUniProt=document.createElement('div');
+			              divUniProt.innerHTML=strUniProt;
+			              if (textArrayUniProt[i] == 'NA'){
+			                textContentUniProt.push(textArrayUniProt[i]);
+			              } else{
+			               textContentUniProt.push(divUniProt.children[0].textContent);
+			              }
+			          }
+			          const filterredUniProt=textContentUniProt.filter(function (elem) {
+			             return elem.toString().toLowerCase().indexOf(valueUniProt) > -1;
+			          });
+			          if (filterredUniProt.length >0){
+			              const tempData=[];
+			              for(let j=0; j < filterredUniProt.length; j++){
+			                tempData.push(textArrayUniProt[textContentUniProt.indexOf(filterredUniProt[j])])
+			              }
+			              self.filterredDiseaseUniProt=tempData.join('; '); 
+			          	  document.getElementById("uniProtWithoutFilter").innerHTML='';
+			          	  document.getElementById("uniProtWithFilter").innerHTML=self.filterredDiseaseUniProt;
+			          } else{
+			             self.filterredDiseaseUniProt='Oopps. No result matched with your search criteria!'; 
+			          	 document.getElementById("uniProtWithoutFilter").innerHTML='';
+			          	 document.getElementById("uniProtWithFilter").innerHTML=self.filterredDiseaseUniProt;
+			          }      
+			        } 
+			        if (valueUniProt.trim().length == 0){
+			          document.getElementById("uniProtWithoutFilter").innerHTML=self.diseaseUniProt;
+			          document.getElementById("uniProtWithFilter").innerHTML='';
+			        }
+			      };
+			      function disGenNetSearch(){
+			        const valueDisGenNet = document.getElementById("myInputDisGenNet").value.toString().toLowerCase();
+			        if (valueDisGenNet.trim().length > 0){
+			          const textArrayDisGeNet=self.diseaseDisGeNetArray;
+			          let textContentDisGeNet=[];
+			          for(let i=0; i < textArrayDisGeNet.length; i++){
+			              const strDisGeNet = textArrayDisGeNet[i];
+			              const divDisGeNet=document.createElement('div');
+			              divDisGeNet.innerHTML=strDisGeNet;
+			              if (textArrayDisGeNet[i] == 'NA'){
+			                textContentDisGeNet.push(textArrayDisGeNet[i]);
+			              } else{
+			                textContentDisGeNet.push(divDisGeNet.children[0].textContent);
+			              }
+			              
+			          }
+			          const filterredDisGeNet=textContentDisGeNet.filter(function (elem) {
+			             return elem.toString().toLowerCase().indexOf(valueDisGenNet) > -1;
+			          });
+			          if (filterredDisGeNet.length >0){
+			              const tempData=[];
+			              for(let j=0; j < filterredDisGeNet.length; j++){
+			                tempData.push(textArrayDisGeNet[textContentDisGeNet.indexOf(filterredDisGeNet[j])])
+			              }
+			              self.filterredDiseaseDisGeNet=tempData.join('; ');
+			              document.getElementById("disGenNetWithoutFilter").innerHTML='';
+			              document.getElementById("disGenNetWithFilter").innerHTML=self.filterredDiseaseDisGeNet;
+			          } else{
+			             self.filterredDiseaseDisGeNet='Oopps. No result matched with your search criteria!'; 
+			              document.getElementById("disGenNetWithoutFilter").innerHTML='';
+			              document.getElementById("disGenNetWithFilter").innerHTML=self.filterredDiseaseDisGeNet;				
+			          }      
+			        } 
+			        if (valueDisGenNet.trim().length == 0){
+			          document.getElementById("disGenNetWithoutFilter").innerHTML=self.diseaseDisGeNet;
+			          document.getElementById("disGenNetWithFilter").innerHTML='';
+			        }
+			      };
+			      
+				</script>
+			
+			{% else %}
+				There is no disease associated with protein..
+			{% endif %}
+		</div>
+	</div>
+{% endblock %}

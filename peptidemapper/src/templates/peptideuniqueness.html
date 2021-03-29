@@ -1,0 +1,191 @@
+
+{%include "base.html" %}
+    <title> {% block head_title %} Peptide Uniqueness|UVic MRMAssayDB{% endblock %} </title>
+
+
+    {% load staticfiles %}
+    <link href="{% static 'css/jquery.dataTables.min.css' %}" rel="stylesheet">
+    <link href="{% static 'css/select.dataTables.min.css' %}" rel="stylesheet">
+    <link href="{% static 'css/buttons.dataTables.min.css' %}" rel="stylesheet">    
+    <link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet">
+    <link href="{% static 'css/navbar-fixed-top.css' %}" rel="stylesheet">
+    
+    <script src="{% static 'js/jquery-1.12.0.min.js' %}"></script>
+    <script src="{% static 'js/jquery.dataTables.min.js' %}"></script>
+    <script src="{% static 'js/dataTables.select.min.js' %}"></script>
+    <script src="{% static 'js/dataTables.buttons.min.js' %}"></script>
+    <script src="{% static 'js/buttons.flash.min.js' %}"></script>
+    <script src="{% static 'js/vfs_fonts.js' %}"></script>
+    <script src="{% static 'js/buttons.html5.min.js' %}"></script>
+    <script src="{% static 'js/buttons.colVis.min.js' %}"></script>
+
+
+    <style> 
+        .my_button_space_class{
+            margin-right :20px; 
+        }
+        td.details-control {
+            text-align:center;
+            color:forestgreen;
+            cursor: pointer;
+        }
+        tr.shown td.details-control {
+          text-align:center; 
+          color:red;
+        }
+        .td-limit {
+            max-width: 70px;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            overflow: hidden;
+        }
+/*        span{
+          max-width:50px;
+          word-wrap:break-word;
+        }*/
+    </style>
+    <script type="text/javascript">
+         $(document).ready(function () {
+              $('#example tfoot th').each( function () {
+                  var title = $(this).text();
+                  $(this).html( '<input type="text" placeholder="Search '+title+'" />' );
+              } );
+             var table = $('#example').DataTable({
+                 "data": pepunqdata.data,
+                 select:"single",
+                 "columns": [
+                     {
+                         "className": 'details-control',
+                         "orderable": false,
+                         "data": null,
+                         "defaultContent": '',
+                         "render": function () {
+                             return '<i class="fa fa-plus-square" aria-hidden="true"></i>';
+                         },
+                         width:"15px"
+                     },
+                     { "data": "proteinID" },
+                     { "data": "peptideSequence" },
+                     { "data": "start" },
+                     { "data": "end" },
+                     { "data": "seqlen" },
+                     { "data": "seq" },
+                     { "data": "peptideuniqueinprotein" },
+                     { "data": "datasource" }
+                 ],
+                 dom: 'Blfrtip',
+                 autoWidth:false,
+                 buttons:[{extend:'csv',filename: 'resultspeptideuniqueness',text:'Download',exportOptions:{columns: [1,2,3,4,5,6,7,8]}}],
+                 columnDefs:[{targets: [6],visible: false,searchable: false}],
+                 "order": [[8, 'asc']]
+             });
+
+             // Add event listener for opening and closing details
+             $('#example tbody').on('click', 'td.details-control', function () {
+                 var tr = $(this).closest('tr');
+                 var tdi = tr.find("i.fa");
+                 var row = table.row(tr);
+
+                 if (row.child.isShown()) {
+                     // This row is already open - close it
+                     row.child.hide();
+                     tr.removeClass('shown');
+                     tdi.first().removeClass('fa-minus-square');
+                     tdi.first().addClass('fa-plus-square');
+                 }
+                 else {
+                     // Open this row
+                     row.child(format(row.data())).show();
+                     tr.addClass('shown');
+                     tdi.first().removeClass('fa-plus-square');
+                     tdi.first().addClass('fa-minus-square');
+                 }
+             });
+
+             table.on("user-select", function (e, dt, type, cell, originalEvent) {
+                 if ($(cell.node()).hasClass("details-control")) {
+                     e.preventDefault();
+                 }
+             });
+            // Apply the search
+            table.columns().every( function () {
+                var that = this;
+         
+                $( 'input', this.footer() ).on( 'keyup change', function () {
+                    if ( that.search() !== this.value ) {
+                        that
+                            .search( this.value )
+                            .draw();
+                    }
+                } );
+            } );
+         });
+
+        function format(d){
+            
+             // `d` is the original data object for the row
+             return '<table cellpadding="5" cellspacing="0" border="0" style="padding-left:50px;">' +
+                 '<tr>' +
+                     '<td>Fasta:</td>' +
+                     '<td>' + d.highlightedpepseq + '</td>' +
+                 '</tr>' +
+             '</table>';  
+        }
+
+        var pepunqdata = {{ pepunqdata|safe }};
+    </script>
+{% block content %}
+    <div class="container-fluid">
+        {% if reachable %}
+           <style type="text/css">
+             .gbuff {
+               margin-top:40px;
+               margin-bottom:20px;
+              }
+            </style>
+            <style type="text/css">
+               .rotate {
+                  transform:rotate(180deg);
+                  transition:all 0.5s;
+              }
+              .rotate.in {
+                  transform:rotate(1800deg);
+                  transition:all 1.5s;
+              }
+            </style>
+            <br>
+            <table width="100%" class="display" id="example" cellspacing="0">
+                <thead>
+                    <tr>
+                        <th>Show Highlighted Peptide Sequence</th>
+                        <th>Protein ID</th>
+                        <th>Peptide Sequence</th>
+                        <th>Start</th>
+                        <th>End</th>
+                        <th>Sequence Length</th>
+                        <th>FASTA Sequence</th>
+                        <th>Peptide unique in protein</th>
+                        <th>Data source</th>
+                    </tr>
+                </thead>
+                <tfoot>
+                    <tr>
+                        <th></th>
+                        <th>Protein ID</th>
+                        <th>Peptide Sequence</th>
+                        <th>Start</th>
+                        <th>End</th>
+                        <th>Sequence Length</th>
+                        <th>FASTA Sequence</th>
+                        <th>Peptide unique in protein</th>
+                        <th>Data source</th>
+                    </tr>
+                </tfoot>
+               
+            </table>
+        {% else %}
+          <p>This data entry is not available due to technical error in connecting to an external data resource. Please try again later.</p>
+        {% endif %}
+    </div>
+
+{% endblock %}

@@ -1,0 +1,140 @@
+{% include 'base.html' %}
+  {% load staticfiles %}
+  {% load url from future %}
+  {% load crispy_forms_tags %}
+  <title> {% block head_title %} Pathway|UVic MRMAssayDB {% endblock %} </title>
+  {% block content %}
+    {% if reachable %}
+      <script src="{% static 'js/jquery-ui.js' %}"></script>
+      <script src="{% static 'js/jquery.imagemapster.js' %}"></script>
+      <link href="{% static 'css/jquery-ui.css' %}" rel="stylesheet">
+      <style>
+        button.accordion {
+            background-color: #eee;
+            color: #444;
+            cursor: pointer;
+            padding: 18px;
+            width: 100%;
+            border: none;
+            text-align: left;
+            outline: none;
+            font-size: 15px;
+            transition: 0.4s;
+        }
+
+        button.accordion.active, button.accordion:hover {
+            background-color: #ddd;
+        }
+
+        button.accordion:after {
+            content: '\002B';
+            color: #777;
+            font-weight: bold;
+            float: right;
+            margin-left: 5px;
+        }
+
+        button.accordion.active:after {
+            content: "\2212";
+        }
+
+        div.panel {
+            padding: 0 18px;
+            background-color: white;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.2s ease-out;
+        }
+      </style>
+      <style type="text/css">
+        .modal-header {
+          background-color: #00994C;
+          color: white;
+          border-radius: 5px 5px 0px 0px;
+          margin: 0 auto;
+        }
+
+      </style>
+      <script type="text/javascript">
+        $(window).load(function(){
+          $(function() {
+            $("#mappertab").tabs();
+          });
+        });
+      </script>
+
+      <div id="mappertab" class="ui-tabs ui-widget ui-widget-content ui-corner-all">
+        <ul class="ui-tabs-nav ui-helper-reset ui-helper-clearfix ui-widget-header ui-corner-all">
+          <li class="ui-state-default ui-corner-top ui-tabs-selected ui-state-active"><a href="#kegg">KEGG Pathway</a></li>
+        </ul>
+        <div id="kegg" class="ui-tabs-panel ui-widget-content ui-corner-bottom">
+          {% if  keggimagedict|length > 0 %}
+            <div>
+                {% for key, values in keggimagedict.items %}
+
+                  <table>
+                    <div style="position: relative;">
+                        <br>
+                        <img src="https://www.kegg.jp{{values.0}}" id="pathwayimage" usemap="#mapdata" border="0" />
+                          <map id="mapdata" name="mapdata" data-scale="1">
+                          {% for corddata in values.2 %}
+                            {% if  corddata.4 == "original" %}
+                              <area shape={{ corddata.0 }}  coords={{ corddata.1 }} title="{{ corddata.3 }}" class="{{ corddata.4 }}"  target="_blank"/>
+                            
+                            {% else %}
+                              <area shape={{ corddata.0 }}  coords={{ corddata.1 }}  href="{{ corddata.2 }}" title="{{ corddata.3 }}" class="{{ corddata.4 }}"  target="_blank"/>
+                            {% endif %}
+                          {% endfor %}
+                          </map>
+                        <br>
+                          <pre>
+                            <h4>{{values.1}}</h4>
+                            <p>Violet indicates the protein or gene that the user searched for in MRMAssayDB, while orange indicates that the protein or gene is present in MRMAssayDB.  All color-coded boxes are linked to the data table in MRMAssayDB via hyperlinks.  Rectangular green boxes represent non-mapped genes/proteins in the pathway.</p>
+                          </pre>
+                        <br>
+                    </div>
+                  </table>
+                {% endfor %}
+                <script type="text/javascript">
+                    var basic_opts = {
+                        mapKey: 'class',
+
+                    };
+                    var basic_opts2 = {
+                        clickNavigate: true
+                      };
+
+                    var initial_opts = $.extend({},basic_opts, 
+                        { 
+                            staticState: false,
+                            fill: false,
+                            stroke: false,
+                            strokeWidth: 2,
+                            strokeColor: 'ff0000'
+                        });
+
+                    $('img').mapster(initial_opts)
+                      .mapster('set',true,'originalUser', {
+                        fill: true,
+                        fillColor: 'ff00ff'
+                      })
+                        .mapster('set',true,'originalMRMAssayDB', {
+                            fill: true,
+                            fillColor: 'fd6a02'
+                      })
+                        .mapster('snapshot') 
+                        .mapster('rebind',basic_opts2);
+                </script>
+              <p>Data source:<strong>KEGG</strong> </p>
+            </div>
+          {% else %}
+            <div>
+              No Data
+            </div>
+          {% endif %}
+        </div>
+      </div>
+    {% else %}
+      <p>This data entry is not available due to technical error in connecting to an external data resource. Please try again later.</p>
+    {% endif %}
+  {% endblock %}

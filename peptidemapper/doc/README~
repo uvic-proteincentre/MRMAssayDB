@@ -1,0 +1,59 @@
+The code of Petidetracker supports the paper: 
+****Name of paper
+######################################################################################
+
+Peptidetracker database created in virtual environment and  based on flat file concept.
+######################################################################################
+
+There are number of dependencies Peptidetracker relies on:
+
+* biopython - http://biopython.org/wiki/Main_Page
+* Django version 1.8.11
+* Django registration form and redux registration form
+* Django Crispy form
+* Bootstrap
+* django-ipware
+* MySQL
+* BioPython
+############################################################
+
+Following files are required to run peptide tracker database:
+
+* ReportBook_active_optimization.csv is master file which is stored in peptidereportfiletoread directory
+* transitionfilestoread directory contains transitions_4000_Qtrap.csv, transitions_6490_Agilent.csv and transitions_6495_Agilent.csv for extracting transition information.
+* UniprotTxt directory store local uniprot inormation (.txt) (updated:2016-03-21)
+* ../peptidetrackerdatabase/src/peptidetrackerapp/static_in_pro/our_static/files this path stores files for protocol (Urea.pdf,Deoxycholate-2.pdf)
+#################################################################################################################################################
+
+Following files are required to store data:
+
+* ../peptidetrackerdatabase/src/peptidetrackerapp/static_in_pro/our_static/signupfile this path stores file for saving signup information (signupprofile.csv) and admin sites store information for user password,name,email address.
+* ../peptidetrackerdatabase/src/peptidetrackerapp/static_in_pro/our_static/submissionrecord this path stores file for saving submission (template) information (submissionrecord.csv).
+* ../peptidetrackerdatabase/src/peptidetrackerapp/static_in_pro/our_static/uploadrecord this path stores file for saving upload (template) information (uploadrecord.csv).
+* ../peptidetrackerdatabase/src/useripaddressrecord this path stores file for saving user ip address information (useripdetails.csv).
+#########################################################################################################################################################################
+
+Following folders are required to store data:
+
+* ../peptidetrackerdatabase/src/filestosubmission/templatefiles/ this path stores files for user generated template files (for backup admin can also check email where they will find file attachment).
+* ../peptidetrackerdatabase/src/filestosubmission/uploadfiles/ this path stores files for user uploaded files (for backup admin can also check email where they will find file attachment).
+#########################################################################################################################################################################
+
+To run Django in differenet IP address during development:
+python manage.py runserver 0.0.0.0:8000
+##########################################
+
+#########################################################################################################################################################################
+
+Restful service to fecth data:
+User can access data programmatically in a following way:
+ 
+The base restful url for peptidetracker is http://peptidetracker.proteincentre.com/rest/api/
+
+It takes the following arguments: searchtype(Any or Protein or UniProtKB Accession) and searchterm(Protein name or UniProtKB Accession or Petidetracker ID or peptide sequence or organism name) in the following format searchtype=Any&searchterm=PEP2014043010 
+You can also just type url in your browser: http://peptidetracker.proteincentre.com/rest/api/?searchtype=Any&searchterm=PEP2014043010, and we will fetch the all information from the peptidetracker database based on peptidetracker id.
+
+Also user can use wget command from terminal to fetch data.
+##########################################
+
+

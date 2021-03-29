@@ -1,0 +1,69 @@
+{%include "base.html" %}
+    {% block content %}
+    {% load staticfiles %}
+    <title> {% block head_title %} PPI |UVic MRMAssayDB{% endblock %} </title>
+    {% if reachable %}
+
+      {% if  stringdbaid|length > 0 %}
+        <div id="cy"></div>
+        <span class="fa fa-bars config-toggle" id="config-toggle"></span>
+
+        <div id="config" class="config">
+
+          <div class="preamble">
+            <span class="label label-info">Protein-protein interaction netwrok</span>
+                <p>The PPI network is based on <b>STRING</b>.</p>
+                <p>In violet is user's query, in maroon are protein assays in PeptideTracker, in orange are protein assays  from PASSEL, CPTAC, SRMAtlas, or PanoramaWeb, and skyblue are proteins without known assays. Edges and nodes are interactive.
+                </p>
+          </div>
+
+        
+<!--         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css"> -->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/4.10.3/css/bootstrap-slider.min.css">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/qtip2/2.2.0/jquery.qtip.min.css" rel="stylesheet" type="text/css" />
+        <link href="{% static 'css/cy_style.css' %}" rel="stylesheet" />
+
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/fastclick/1.0.6/fastclick.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/3.10.0/lodash.min.js"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/4.10.3/bootstrap-slider.min.js"></script>
+        <script src="https://cdn.rawgit.com/cytoscape/cytoscape.js-cola/1.6.0/cola.js"></script>
+        <script src="https://js.cytoscape.org/js/cytoscape.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/qtip2/2.2.0/jquery.qtip.min.js"></script>
+        <script src="https://cdn.rawgit.com/cytoscape/cytoscape.js-qtip/2.7.0/cytoscape-qtip.js"></script>
+
+        <script type="text/javascript">
+          var ppidata={{stringjsondata|safe}};
+        </script>
+        <script type="text/javascript">
+          var cystylejson={{cystylejson|safe}};
+        </script>
+        <script src="https://cdn.rawgit.com/cytoscape/cytoscape.js-cola/1.6.0/cytoscape-cola.js"></script>
+        <script src="{% static 'js/cytoscape_ppi_code.js' %}"></script>
+        <p>
+              Data by <a target="_blank" href="https://string-db.org/" rel="external">STRING</a>,
+              visualisation by <a href="https://js.cytoscape.org">Cytoscape.js</a>,
+              layout by <a href="https://ialab.it.monash.edu/webcola/">Cola.js</a>.
+        </p>
+        </div>
+        <script>
+         if (typeof console == "undefined") {
+              this.console = {log: function() {}};
+              }
+              else{
+               console.log = function() {}
+              }
+        </script>
+
+      {% else %}
+        <div>
+          No Data
+        </div>
+      {% endif %}
+    {% else %}
+      <p>This data entry is not available due to technical error in connecting to an external data resource. Please try again later.</p>
+    {% endif %}
+  {% endblock %}

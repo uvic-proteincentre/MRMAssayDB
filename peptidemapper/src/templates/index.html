@@ -1,0 +1,716 @@
+{%include "base.html" %}
+  {% load staticfiles %}
+    {% load crispy_forms_tags %}
+  
+    <style>
+        { % block style %}
+        
+        { % endblock %}
+    </style>
+    <script src="{% static 'js/jquery.min.js' %}"></script>
+    <script src="{% static 'js/jsapi.js' %}"></script>
+    <script src="{% static 'js/loader.js' %}"></script>
+    <script src="{% static 'js/canvas2svg.js' %}"></script>
+    <script src="{% static 'js/jvenn.min.js' %}"></script>
+    <script type="text/javascript">
+      google.charts.load('current', {'packages':['corechart']});
+      google.charts.setOnLoadCallback(drawSpeciesChart);
+      google.charts.setOnLoadCallback(drawKeggChart);
+      google.charts.setOnLoadCallback(drawGoChart);
+
+
+    	function drawSpeciesChart() {
+    		var tempdataspecies={{speciesstat|safe}};
+    		var data = google.visualization.arrayToDataTable(tempdataspecies);
+    		var options = {
+    			height: 600,
+    			legend: {position: 'none'},
+    			bar: {groupWidth: "100%"},
+    			backgroundColor: {
+    				fill: '#D3D3D3',
+    				fillOpacity: 0.8
+    			},
+    			chartArea: {
+    				height:300,
+    	        	top:100,
+    				backgroundColor: {
+    					fill: '#D3D3D3',
+    					fillOpacity: 0.1
+    				},
+    			},
+    			hAxis: {
+    				title: "Species",
+    	   			slantedText: true,
+    	        	slantedTextAngle: 60
+    	    	},
+    	    	vAxis: {
+    	    		title: 'No. of assays',
+    	    		minValue: 0,
+    	    		viewWindow: { min: 0 },
+    	    		format: '0',
+    	    	},
+    	    };
+    	    var chart = new google.visualization.ColumnChart(document.getElementById('chart_div_species'));
+    	    chart.draw(data, options);
+    	}
+
+    	function drawKeggChart() {
+    		var tempdatakegg={{keggstat|safe}};
+    		var data = google.visualization.arrayToDataTable(tempdatakegg);
+    		var options = {
+    			height: 600,
+    			legend: {position: 'none'},
+    			bar: {groupWidth: "100%"},
+    			backgroundColor: {
+    				fill: '#D3D3D3',
+    				fillOpacity: 0.8
+    			},
+    			chartArea: {
+    				height:300,
+    	        	top:100,
+    				backgroundColor: {
+    					fill: '#D3D3D3',
+    					fillOpacity: 0.1
+    				},
+    			},
+    			hAxis: {
+    				title: "KEGG pathway",
+    	   			slantedText: true,
+    	        	slantedTextAngle: 60
+    	    	},
+    	    	vAxis: {
+    	    		title: 'No. of assays',
+    	    		minValue: 0,
+    	    		viewWindow: { min: 0 },
+    	    		format: '0',
+    	    	},
+    	    };
+    	    var chart = new google.visualization.ColumnChart(document.getElementById('chart_div_pathway'));
+    	    chart.draw(data, options);
+    	}
+
+    	function drawGoChart() {
+    		var tempdatago={{gostat|safe}};
+    		var data = google.visualization.arrayToDataTable(tempdatago);
+    		var options = {
+    			height: 600,
+    			legend: {position: 'none'},
+    			bar: {groupWidth: "100%"},
+    			backgroundColor: {
+    				fill: '#D3D3D3',
+    				fillOpacity: 0.8
+    			},
+    			chartArea: {
+    				height:300,
+    	        	top:100,
+    				backgroundColor: {
+    					fill: '#D3D3D3',
+    					fillOpacity: 0.1
+    				},
+    			},
+    			hAxis: {
+    				title: "GO term",
+    	   			slantedText: true,
+    	        	slantedTextAngle: 60
+    	    	},
+    	    	vAxis: {
+    	    		title: 'No. of assays',
+    	    		minValue: 0,
+    	    		viewWindow: { min: 0 },
+    	    		format: '0',
+    	    	},
+    	    };
+    	    var chart = new google.visualization.ColumnChart(document.getElementById('chart_div_go'));
+    	    chart.draw(data, options);
+    	}
+
+    </script>
+
+
+    <style type="text/css">
+      .centerBlock {
+        display: table;
+        margin: auto;
+      }
+    </style>
+    <link href="{% static 'css/odometer-theme-car.css' %}" rel="stylesheet">
+    <script src="{% static 'js/odometer.js' %}"></script>
+    <style> 
+      input[type=text] {
+          width:100%;
+          box-sizing: border-box;
+          border: 2px solid #ccc;
+          border-radius: 4px;
+          font-size: 16px;
+          background-color: white;
+          background-image: url('{% static "img/search-icon.png" %}');
+          background-position: 10px 10px; 
+          background-repeat: no-repeat;
+          padding: 12px 20px 12px 40px;
+          -webkit-transition: width 0.4s ease-in-out;
+          transition: width 0.4s ease-in-out;
+      }
+
+    </style>
+    <style type="text/css">
+      #advancesearch{
+        display:none;
+      }
+    </style>
+
+    <script>     
+      $(document).ready(function() {
+        $("#advancefield").click(function() {
+          $("#basicsearch").slideUp("slow", function() {
+            $("#advancesearch").slideDown("slow");
+          });
+        });
+        $("#basicfield").click(function() {
+          $("#advancesearch").slideUp("slow", function() {
+            $("#basicsearch").slideDown("slow");
+          });
+        });
+      });
+    </script>
+    <script type="text/javascript" charset="utf-8">
+      setTimeout(function(){
+          odometer1.innerHTML = {{ allvalidpepassay }};
+          odometer2.innerHTML = {{ uqpep }};
+          odometer3.innerHTML = {{ uqpro }};
+          odometer4.innerHTML = {{ speciesnumber }};
+          odometer5.innerHTML = {{ allpepassay }};
+          odometer6.innerHTML = {{ allunqStripPep }};
+      }, 1000);
+    </script>
+    <style>
+      .odometer {
+          font-size: 16px;
+      }
+    </style>
+    <style>
+    	 #mrmassaydbexample {
+    	    position: relative;
+    	    z-index: 1000;
+    	}
+
+    	#mrmassaydbexample ul ul {
+    	    display: none;
+    	}
+
+        #mrmassaydbexample ul li:hover > ul {
+            display: block;
+            position: absolute;
+            z-index: 1000;
+        }
+
+
+    	#mrmassaydbexample ul {
+    	    background: #efefef; 
+    	    background: linear-gradient(top, #D22525 0%, #5F1414 100%);
+    	    background: -moz-linear-gradient(top, #D22525 0%, #5F1414 100%);
+    	    background: -webkit-linear-gradient(top, gray 0%,#5F1414 100%);
+    	    box-shadow: 0px 0px 3px rgba(0,0,0,0.15);
+    	    padding: 0 3px;
+    	    border-radius: 3px;  
+    	    list-style: none;
+    	    position: relative;
+    	    display: inline-table;
+    	}
+
+        #mrmassaydbexample ul:after {
+            content: ""; clear: both; display: block;
+        }
+
+        #mrmassaydbexample ul li {
+        	position: relative;
+        }
+
+        #mrmassaydbexample ul li:hover {
+            background: #4b545f;
+            background: linear-gradient(top, #4f5964 0%, #5f6975 40%);
+            background: -moz-linear-gradient(top, #4f5964 0%, #5f6975 40%);
+            background: -webkit-linear-gradient(top, #4f5964 0%,#5f6975 40%);
+        }
+
+        #mrmassaydbexample ul li:hover a {
+            color: #fff;
+        }
+
+        #mrmassaydbexample ul li a {
+            display: block; padding: 2px 40px;
+            color: #FFF; text-decoration: none;
+
+        }
+
+        #mrmassaydbexample ul ul {
+            background: #5f6975; border-radius: 0px; padding: 0;
+            position: absolute; top: 5px;z-index: 10;
+        }
+
+        #mrmassaydbexample ul ul li {
+            float: none; 
+            border-top: 1px solid #6b727c;
+            border-bottom: 1px solid #575f6a; position: relative;
+            z-index: 1000;
+        }
+
+        #mrmassaydbexample ul ul li a {
+            padding: 15px 40px;
+            color: #fff;
+        }
+
+       #mrmassaydbexample ul ul li a:hover {
+            background: #4b545f;
+        }
+
+        #mrmassaydbexample ul ul ul {
+            position: absolute; top:0;
+        }
+
+        .wrapper
+        {
+            overflow: hidden;
+            padding: 0em 0em 5em 0em;
+            background: #FFF;
+            top: 150px;
+            position: absolute;
+            z-index: 0;
+        }
+    </style>
+  {% block jumbotron %}
+    <div class="container-fluid">
+      <div class="jumbotron">
+        <div class="row">
+          <div align="justify">
+            <div id="gallery-text">
+              <div class="centerBlock">
+                <p style="font-family:Century Gothic;"><h3><b>MRMAssayDB, a knowledgebase for available targeted proteomic assays in the proteomics community.</b></h3></p>
+
+                <p style="display: inline-block;"><font size="4">MRMAssayDB lists &nbsp;<div id="odometer1" class="odometer"></div> <font size="4"> validated assays corresponding to</font>&nbsp;<div id="odometer2" class="odometer"></div> <font size="4">stripped peptides that can be used to quantify</font>&nbsp;<div id="odometer3" class="odometer"></div> <font size="4">proteins from</font>&nbsp;<div id="odometer4" class="odometer"></div> <font size="4">organisms.</font></p>
+              </div>
+            </div>
+          </div>
+          <div class='col-sm-4 col-sm-offset-4'>
+              <div id="basicsearch">
+                <form name="myBasicForm" class="navbar-form" action="/search/" method="POST">
+                  <div id="loading" style="display:none;">
+                      <div>
+                        <img src='{% static "img/ajax-search.gif" %}' alt="" />
+                      </div>
+                  </div>
+                  <div id="form_input_things">
+                    {% csrf_token %}
+
+                      <p>
+                      <div class="form-group" >
+                      <input type="text" name="searchterm" id="myMessage" placeholder="Search term" data-toggle="tooltip" data-placement="bottom" title="Search by UniProtKB Accession,Protein name,Gene name,Organism name,Sub Cellular Location,Peptide sequence, pathway name,Disease name, GO ID, GO term name or GO category or Human Assays for FDA approved Marker"  required/>
+                      </div>
+                      <input class ="btn btn-primary" type="submit" id="submitid" value="Submit"/>&nbsp;
+                      <div id="header-wrapper" style="display:inline-block;">
+                        <nav id="mrmassaydbexample">
+                            <ul>
+                              <li>
+                                <a href="#">Examples</a>
+                                <ul>
+                                  <li>
+                                     <a href="#" onclick="jQuery('#myMessage').val('Furin'); jQuery('#sinfo').text('Retrieve result using Protein name'); return false;">
+                                     Protein
+                                    </a>
+                                 </li>
+                                 <li>
+                                     <a href="#" onclick="jQuery('#myMessage').val('P09958'); jQuery('#sinfo').text('Retrieve result using UniProtKB Accession'); return false;">
+                                     Accession
+                                    </a>
+                                 </li>
+                                 <li>
+                                     <a href="#" onclick="jQuery('#myMessage').val('FURIN'); jQuery('#sinfo').text('Retrieve result using Gene name'); return false;">
+                                     Gene
+                                    </a>
+                                 </li>
+                                 <li>
+                                     <a href="#" onclick="jQuery('#myMessage').val('Secreted'); jQuery('#sinfo').text('Retrieve result using Subcellular location'); return false;">
+                                     Subcellular location
+                                    </a>
+                                 </li>
+                                 <li>
+                                     <a href="#" onclick="jQuery('#myMessage').val('GDLAIHLVSPMGTR'); jQuery('#sinfo').text('Retrieve result using peptide sequence'); return false;">
+                                     Peptide sequence
+                                    </a>
+                                 </li>
+                                 <li>
+                                     <a href="#" onclick="jQuery('#myMessage').val('Homo sapiens'); jQuery('#sinfo').text('Retrieve result using Organism name'); return false;">
+                                     Organism
+                                    </a>
+                                 </li>
+                                 <li>
+                                     <a href="#" onclick="jQuery('#myMessage').val('p53 signaling pathway'); jQuery('#sinfo').text('Retrieve result using pathway name'); return false;">
+                                     KEGG pathway
+                                    </a>
+                                 </li>
+                                 <li>
+                                     <a href="#" onclick="jQuery('#myMessage').val('Focal segmental glomerulosclerosis 4 (FSGS4)'); jQuery('#sinfo').text('Retrieve result using Disease Association name'); return false;">
+                                     Disease-causing mutation
+                                    </a>
+                                 </li>
+                                 <li>
+                                     <a href="#" onclick="jQuery('#myMessage').val('GO:0044267'); jQuery('#sinfo').text('Retrieve result using GO ID'); return false;">
+                                     GO ID
+                                    </a>
+                                 </li>
+                                 <li>
+                                     <a href="#" onclick="jQuery('#myMessage').val('cellular protein metabolic process'); jQuery('#sinfo').text('Retrieve result using GO term name'); return false;">
+                                     GO term name
+                                    </a>
+                                 </li>
+                                 <li>
+                                     <a href="#" onclick="jQuery('#myMessage').val('Biological Process'); jQuery('#sinfo').text('Retrieve result using GO category'); return false;">
+                                     GO category
+                                    </a>
+                                 </li>
+                                 <li>
+                                     <a href="#" onclick="jQuery('#myMessage').val('DB00030'); jQuery('#sinfo').text('Retrieve result using Drug ID'); return false;">
+                                     Drug ID
+                                    </a>
+                                 </li>
+                                 <li>
+                                     <a href="#" onclick="jQuery('#myMessage').val('Yes'); jQuery('#sinfo').text('Retrieve result using Assays for FDA approved Marker'); return false;">
+                                     Human Assays for FDA approved Marker
+                                    </a>
+                                 </li>
+                                </ul>
+                              </li>
+                            </ul>
+                        </nav>
+                      </div>
+                      </p>
+                      <a class="advancefield" href="" id="advancefield">Show advance search</a>
+                  </div>
+                  <div id="sinfo"></div>
+                </form>
+                <script>
+                    $("form").submit(function() {
+                    {
+                      if( $("[submit_button_pressed=Save]").get(0) === undefined )
+                      { 
+                        $('#loading').show();
+                        $('#form_input_things').hide();
+                      }
+                    }
+                    return true;    
+                    });
+
+                    $("submit").live('click', function() {
+                       $(this).attr("submit_button_pressed", $(this).val());
+                    });
+                </script>
+              </div>
+
+              <div id="advancesearch">
+                <form id="main-form" class="navbar-form" action="{{ request.build_absolute_uri }}search/advanced/" method="POST" enctype='multipart/form-data' name="forminfo">
+                  {% csrf_token %}
+                <div class="input_fields_wrap">
+                  
+                </div>
+                <br/>
+                <button class="btn btn-primary" type="button" value="Add" id="form-add">Add More Fields</button>
+                <input class="btn btn-primary" type="submit" value="Submit"> </input>
+                <br/>
+                <a class="basicfield" href="" id="basicfield">Back to basic search</a>
+                </form>
+
+                <script type="text/template" id="content-template">
+                  <div class="repeat-container">
+                    <div class="form-field">
+                      <select class="alarm_action removeDuplication" name="searchtype" required>
+                        <option value="UniProtKB Accession">UniProtKB Accession</option>
+                        <option value="Protein">Protein</option>
+                        <option value="Gene">Gene</option>
+                        <option value="Organism">Organism</option>
+                        <option value="SubCellular">Sub Cellular Location</option>
+                        <option value="Peptide Sequence">Peptide Sequence</option>
+                        <option value="Pathway Name">Pathway Name</option>
+                        <option value="Disease Name">Disease Name</option>
+                        <option value="Go ID">Go ID</option>
+                        <option value="Go Name">Go Term Name</option>
+                        <option value="Go Term">Go Category</option>
+                        <option value="Drug Bank">Drug ID</option>
+                        <option value="Assays for FDA approved Marker">Human Assays for FDA approved Marker</option>
+                        <option value="FastaFile">Own protein sequences in FASTA format</option>
+                      </select>
+                      <body onload="setOrglist();">
+                        <select name="searchtermorg" class="showForOrg" style="display: none;" ></select>
+                      </body>
+                      <body onload="setFdalist();">
+                        <select name="searchtermfda" class="showForFda" style="display: none;" ></select>
+                      </body>
+                      <input class="filefield" name="fileupload" type="file" style="display: none;"/>
+                      <textarea name="searchterm" class="myTextarea" name="advancetext" placeholder="Search term" data-toggle="tooltip" data-placement="bottom" rows="3" wrap="off" style="resize:none" required></textarea>
+                    </div>
+                  </div>
+                </script>
+
+                <script type="text/template" id="content-template_remove">
+                  <div class="repeat-container">
+                    <div class="form-field">
+                      <select class="alarm_action removeDuplication" name="searchtype" required>
+                        <option value=""></option>
+                        <option value="UniProtKB Accession">UniProtKB Accession</option>
+                        <option value="Protein">Protein</option>
+                        <option value="Gene">Gene</option>
+                        <option value="Organism">Organism</option>
+                        <option value="SubCellular">Sub Cellular Location</option>
+                        <option value="Peptide Sequence">Peptide Sequence</option>
+                        <option value="Pathway Name">Pathway Name</option>
+                        <option value="Disease Name">Disease Name</option>
+                        <option value="Go ID">Go ID</option>
+                        <option value="Go Name">Go Term Name</option>
+                        <option value="Go Term">Go Category</option>
+                        <option value="Drug Bank">Drug ID</option>
+                        <option value="Assays for FDA approved Marker">Human Assays for FDA approved Marker</option>
+                        <option value="FastaFile">Own protein sequences in FASTA format</option>
+                      </select>
+                      <body onload="setOrglist();">
+                        <select name="searchtermorg" class="showForOrg" style="display: none;"></select>
+                      </body>
+                      <body onload="setFdalist();">
+                        <select name="searchtermfda" class="showForFda" style="display: none;" ></select>
+                      </body>
+                      <input class="filefield" name="fileupload" type="file" style="display: none;"/>
+                      <textarea name="searchterm" class="myTextarea" name="advancetext" placeholder="Search term" data-toggle="tooltip" data-placement="bottom" rows="3" wrap="off" style="resize:none" required></textarea>
+                      <a href="#" class="remove_field"><i class="fa fa-trash"></i></a>
+                    </div>
+                  </div>
+                </script>
+
+
+
+                <script type="text/javascript">
+                  var max_fields = 13; //maximum input boxes allowed
+                  var wrapper = $(".input_fields_wrap"); //Fields wrapper
+                  var addButton = $("#form-add"); //Add button ID
+                  var form = $('#main-form');
+                  var x = 1; //initlal text box count
+                  var orgarray = {{ speciesName|safe}};
+                  var fdaarray = ['','Yes','No'];
+
+                  wrapper.append($("#content-template").html());
+                  setOrglist($(".showForOrg"));
+                  setFdalist($(".showForFda"));
+
+        				  $(document).on('change', '.alarm_action', function(e) {
+        				    var $container = $(this).parents('.form-field');
+                    if ($(this).val() == "FastaFile") {
+                      $('.filefield', $container).show();
+                      $(".myTextarea", $container).hide();
+                      $(".showForOrg", $container).hide();
+                      $(".showForFda", $container).hide();
+
+                      $(".filefield", $container).prop('required', true);
+                      $(".myTextarea", $container).prop('required', false);
+                      $(".showForOrg", $container).prop('required', false);
+                      $(".showForFda", $container).prop('required', false);
+
+                      $(".myTextarea", $container).val('');
+                      $(".showForOrg", $container).val('');
+                      $(".showForFda", $container).val('');
+
+                    } else if ($(this).val() == "Organism") {
+                      $('.filefield', $container).hide();
+                      $(".myTextarea", $container).hide();
+                      $(".showForOrg", $container).show();
+                      $(".showForFda", $container).hide();
+
+                      $(".filefield", $container).prop('required', false);
+                      $(".myTextarea", $container).prop('required', false);
+                      $(".showForOrg", $container).prop('required', true);
+                      $(".showForFda", $container).prop('required', false);
+
+                      $(".filefield", $container).val('');
+                      $(".myTextarea", $container).val('');
+                      $(".showForFda", $container).val('');
+
+                    } else if ($(this).val() == "Assays for FDA approved Marker") {
+                      $('.filefield', $container).hide();
+                      $(".myTextarea", $container).hide();
+                      $(".showForOrg", $container).hide();
+                      $(".showForFda", $container).show();
+
+                      $(".filefield", $container).prop('required', false);
+                      $(".myTextarea", $container).prop('required', false);
+                      $(".showForOrg", $container).prop('required', false);
+                      $(".showForFda", $container).prop('required', true);
+
+                      $(".filefield", $container).val('');
+                      $(".myTextarea", $container).val('');
+                      $(".showForOrg", $container).val('');
+
+                    } else {
+                      $('.filefield', $container).hide();
+                      $(".myTextarea", $container).show();
+                      $(".showForOrg", $container).hide();
+                      $(".showForFda", $container).hide();
+
+                      $(".filefield", $container).prop('required', false);
+                      $(".myTextarea", $container).prop('required', true);
+                      $(".showForOrg", $container).prop('required', false);
+                      $(".showForFda", $container).prop('required', false);
+                      
+                      $(".filefield", $container).val('');
+                      $(".showForOrg", $container).val('');
+                      $(".showForFda", $container).val('');
+                    }
+        				  });
+
+                  $(addButton).click(function(e) { //on add input button click
+                    e.preventDefault();
+                    if (x < max_fields) { //max input box allowed
+                      x++; //text box increment
+                      wrapper.append($("#content-template_remove").html());
+                      setOrglist($(".showForOrg").last());
+                      setFdalist($(".showForFda").last());
+                    } else {
+                      alert("Sorry, you have reached maximum add options.");
+                    }
+                  });
+
+                  $(wrapper).on("click", ".remove_field", function(e) { //user click on remove text
+                    e.preventDefault();
+                    $(this).parent('div').remove();
+                    x--;
+                  });
+
+                  $(document).on('change', 'select.removeDuplication', function(e) {
+                    e.preventDefault();
+                    var cI = $(this);
+                    var others = $('select.removeDuplication').not(cI);
+                    $.each(others, function() {
+                      if ($(cI).val() == $(this).val() && $(cI).val() != "") {
+                        $(cI).val('');
+                        alert($(this).find('option:selected').text() + ' already selected.');
+                      }
+                    });
+                  });
+
+                  var form = document.forms.namedItem("forminfo");
+                 
+                  form.on('submit', function(e) {
+                    var http = new XMLHttpRequest();
+                    var url = $(this).attr("action");
+                    http.open("POST", url, true);
+                    formData = new FormData(form);
+                    http.send(formData);
+
+                    e.preventDefault();
+                    return false;
+                  });
+                  form[0].reset();
+
+
+                  function setOrglist($programDropdown) {
+                    $.each(orgarray , function(key, value) {
+                      $programDropdown
+                       .append($("<option></option>")
+                       .attr("value",value)
+                       .text(value));
+                     });
+                  }
+                  function setFdalist($programDropdown) {
+                    $.each(fdaarray , function(key, value) {
+                      $programDropdown
+                       .append($("<option></option>")
+                       .attr("value",value)
+                       .text(value));
+                     });
+                  }
+                </script>
+              </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  {% endblock %}
+
+  {% block subjumbotron %}
+    <div class="container-fluid">
+      <div class="jumbotron">
+        <div class="row">
+          <div align="justify">
+            <div id="gallery-text">
+              <div class="centerBlock">
+                  <p style="display: inline-block;"><font size="4">The information on the assays is based on  &nbsp;<div id="odometer5" class="odometer" ></div> <font size="4"> assay entries from  </font> &nbsp;<div id="odometer6" class="odometer" ></div> <font size="4">stripped peptides available in the targeted proteomics community repositories; CPTAC, PASSEL, PanoramaWeb, PeptideTracker, and SRMAtlas. MRMAssayDB also annotates all assay entries with information from UniProtKB, PDB, Pathway Commons, KEGG, STRING, QuickGO, DisGeNET, DrugBank</font></p>
+              </div>
+            </div>
+          </div>
+          </div>
+        </div>
+      </div>
+  {% endblock %}
+  {% block content %}
+<!--        <div class="container">
+            <div style="width: 100%;">
+	            <div style="width: 40%; float: left; margin: 5px;">
+	              <div class="centerBlock">
+	                <h4><b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Unique Proteins</b></h4>
+	                <div id="vennprot" style="width:auto height:auto";></div>
+	              </div>
+	          </div>
+	          <div style="width: 40%; float: right; margin: 5px;">
+	              <div class="centerBlock">
+	                <h4><b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Unique Peptides</b></h4>
+	                <div id="vennpep" style="width:auto height:auto";></div>
+	              </div>
+	          </div>
+        </div>
+    </div>
+    <br>
+    <br> -->
+    <div class="container-fluid">
+      <div style="width: 100%;">
+        <div style="width: 32%; float: left; margin: 10px;">
+          <caption> <b>Top 10 species</b></caption>
+          <div id="chart_div_species" style="width: 100%; height: 100%;"></div>
+          <br>
+        </div>
+        <div style="width: 32%; float: left; margin: 10px;">
+          <caption><b>Top 10 Kegg pathway coverage</b></caption>
+          <div id="chart_div_pathway" style="width: 100%; height: 100%;"></div>
+        </div>
+        <div style="width: 30%; float: left; margin: 10px;">
+          <caption><b>Top 10 Gene Ontology coverage</b></caption>
+          <div id="chart_div_go" style="width: 100%; height: 100%;"></div>
+        </div>
+      </div>
+    </div>
+        <script type="text/javascript" charset="utf-8">
+            var pepsets = {{ jvennpep|safe }};
+            var mrmdbname={{ jvennmrmdb|safe }};
+            $(document).ready(function(){
+                    $('#vennpep').jvenn({
+                        fontSize: "12px",
+                        series: [{name:mrmdbname,values:pepsets}],
+                        disableClick: true,
+                        exporting: false,
+                        displaySwitch: true,
+                        shortNumber: false,
+                        colors: ["rgb(0,102,0)","rgb(90,155,212)","rgb(241,90,96)","rgb(255,117,0)","rgb(255,117,0)"]
+
+                    });
+            });
+        </script>
+        <script type="text/javascript" charset="utf-8">
+            var protsets = JSON.parse('{{ jvennprot|safe }}');
+            var mrmdbname=JSON.parse('{{ jvennmrmdb|safe }}');
+            $(document).ready(function(){
+                    $('#vennprot').jvenn({
+                        fontSize: "12px",
+                        series: [{name:mrmdbname,values:protsets}],
+                        disableClick: true,
+                        exporting: false,
+                        displaySwitch: true,
+                        shortNumber: false,
+                        colors: ["rgb(0,102,0)","rgb(90,155,212)","rgb(241,90,96)","rgb(255,117,0)","rgb(255,117,0)"]
+
+                    });
+            });
+        </script>
+{% endblock %}

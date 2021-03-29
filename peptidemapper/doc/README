@@ -1,0 +1,57 @@
+The code of MRMAssayDB supports the paper: 
+****Name of paper
+######################################################################################
+
+MRMAssayDB tool created in virtual environment and  based on flat file concept.
+######################################################################################
+
+There are number of dependencies MRMAssayDB relies on:
+
+* biopython - http://biopython.org/wiki/Main_Page
+* Django version 1.8.11
+* Django registration form and redux registration form
+* Django Crispy form
+* Bootstrap
+* django-ipware
+* BioPython
+* q- Text as Data (http://harelba.github.io/q/index.html)
+* Google chrome
+############################################################
+
+Following files are required to run MRMAssayDB:
+
+* 'ReportBook_mother_file.csv' is master file which is stored in 'mappermotherfile' directory
+* 'humsavar.txt' file conatins disease information related to human which is stored in 'UniDiseaseInfo' directory
+* 'gene_ontology.1_2.obo' and 'goa_uniprot_all.gaf' files conatin GO information related to human and mouse which are stored in 'quickGOAData' directory
+
+#########################################################################################################################################################################
+
+Following folders are required to store data:
+
+#########################################################################################################################################################################
+
+To run Django in differenet IP address during development:
+python manage.py runserver 0.0.0.0:8000
+
+After creating new model run following command:
+python manage.py makemigrations
+python manage.py migrate
+
+After adding static file run following command:
+python manage.py collectstatic
+
+After creating new table in database run following command:
+python manage.py syncdb
+
+##########################################
+
+#########################################################################################################################################################################
+
+Restful service to fecth data:
+User can access data programmatically in a following way:
+ 
+
+Also user can use wget command from terminal to fetch data.
+##########################################
+
+

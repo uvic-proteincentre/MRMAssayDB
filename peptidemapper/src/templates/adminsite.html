@@ -1,0 +1,122 @@
+{%include "base.html" %}
+    {% load url from future %}
+    <title> {% block head_title %} RAdmin|UVic MRMAssayDB{% endblock %} </title>
+    {% load staticfiles %}
+    <link href="{% static 'css/jquery.dataTables.min.css' %}" rel="stylesheet">
+    <link href="{% static 'css/select.dataTables.min.css' %}" rel="stylesheet">
+    <link href="{% static 'css/buttons.dataTables.min.css' %}" rel="stylesheet">    
+    <link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet">
+    <link href="{% static 'css/navbar-fixed-top.css' %}" rel="stylesheet">
+    
+    <script src="{% static 'js/jquery-1.12.0.min.js' %}"></script>
+    <script src="{% static 'js/jquery.dataTables.min.js' %}"></script>
+    <script src="{% static 'js/dataTables.select.min.js' %}"></script>
+    <script src="{% static 'js/dataTables.buttons.min.js' %}"></script>
+    <script src="{% static 'js/buttons.flash.min.js' %}"></script>
+    <script src="{% static 'js/vfs_fonts.js' %}"></script>
+    <script src="{% static 'js/buttons.html5.min.js' %}"></script>
+    <script src="{% static 'js/buttons.colVis.min.js' %}"></script>
+
+
+    <style> 
+        .my_button_space_class{
+            margin-right :20px; 
+        }
+    </style>
+    <script type="text/javascript" charset="utf-8">
+        $(document).ready(function() {
+        // Setup - add a text input to each footer cell
+        $('#example tfoot th').each( function () {
+            var title = $(this).text();
+            $(this).html( '<input type="text" placeholder="Search '+title+'" />' );
+        } );
+ 
+        // DataTable
+        var table = $('#example').DataTable( {'scrollX':true,'scrollY':'650px','scrollCollapse':true,'dom': 'Blfrtip','autoWidth':false,         buttons:[{extend:'csv',filename: 'adminmrmassaydb',text:'Download all'},{extend: 'csv',filename: 'adminmrmassaydbselected',text: 'Download selected',exportOptions: {modifier: {
+                     selected: true}}}],columnDefs:[ { orderable: false, className: 'select-checkbox',searchable: false,targets:[0]}],
+                     select: {style:'multi',selector: 'td:first-child'},order: [[ 1, 'asc' ]]
+        } );
+
+
+        // Apply the search
+        table.columns().every( function () {
+            var that = this;
+    
+            $( 'input', this.footer() ).on( 'keyup change', function () {
+                if ( that.search() !== this.value ) {
+                    that
+                        .search( this.value )
+                        .draw();
+                }
+            } );
+        } );
+    } );
+    </script>
+
+    {% block jumbotron %}
+        <div class="jumbotron">
+            <div class="row">
+                <div class="container-fluid">
+                    <div class ="col-sm-11">
+                    <div align="justify">
+                    <h2> This is admin page </h2>
+                    <p>Admin has access for the following information: </p>
+
+                    <p>1. Details of user IP address.</p>
+                    <p>2. <a href="{% url 'admin:index' %}"> Django admin page. </a></p>
+                    <form action="/adminsite/" method="get">
+                        <label> Browse by </label>
+                        <label><input type="radio" name="searchtype", value="userip" /> UserIp</label>
+                        <input class ="btn btn-primary" type="submit" value="Submit"> 
+                    </form>
+                    </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    {% endblock %}
+
+    {% block content %}
+        <div class='row'>
+        <div class="container-fluid">
+            <div class ="col-sm-11">
+
+
+            {% if contextadminip %}
+                <p class ='text-align-center'>You searched for: <strong>User IP information </strong></p>
+                <p class ='text-align-center'>Number of unique user: <strong> {{ contextadminip|length }} </strong></p>
+                <table  id="example" class="display" cellspacing="0" width="100%">
+                    <thead>
+                        <tr>
+                            <th></th>
+                            <th>IP Address</th>
+                            <th>Access Time</th>
+                        
+                        </tr>
+                    </thead>
+                    <tfoot>
+                        <tr>
+                            <th></th>
+                            <th>IP Address</th>
+                            <th>Access Time</th>
+                        </tr>
+                    </tfoot>
+                    <tbody>
+                        {% for key, values in contextadminip.items %}
+                            {% for items in values %}
+                                <tr>
+                                    <td></td>
+                                    <td> {{key}}</td>
+                                    <td>{{ items }}</td>
+                                </tr>
+                            {% endfor %}
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% endif %}
+
+            </div>
+        </div>
+        </div>
+    {% endblock %}

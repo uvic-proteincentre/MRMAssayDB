@@ -1,0 +1,273 @@
+{% extends 'base.html' %}
+  {% load staticfiles %}
+
+  <title> {% block head_title %} Help|UVic MRMAssayDB {% endblock %} </title>
+	{% block jumbotron %}
+  		<div class="jumbotron">
+			<div class="row">
+						<h2>Help</h2>
+						<div align="justify"> 
+						<p>MRMAssayDB is targeted proteomics resource maintained by the University of Victoria Genome British Columbia Proteomics Centre.</p>
+						<p>MRMAssayDB is publicly accessible resource via the <a href="/"><b>http://mrmassaydb.proteincentre.com</b></a></p>
+						<a href="https://www.proteincentre.com/"><h5>More about the Uvic Proteomics Centre...</h5></a>
+						</div>
+   	  		</div>
+    	</div>
+
+	{% endblock %}
+
+	{% block content %}
+		<script src="{% static 'js/loader.js' %}"></script>
+        <style>
+	        button.accordion {
+	            background-color: #eee;
+	            color: #444;
+	            cursor: pointer;
+	            padding: 18px;
+	            width: 100%;
+	            border: none;
+	            text-align: left;
+	            outline: none;
+	            font-size: 15px;
+	            transition: 0.4s;
+	        }
+
+	        button.accordion.active, button.accordion:hover {
+	            background-color: #ddd;
+	        }
+
+	        button.accordion:after {
+	            content: '\002B';
+	            color: #777;
+	            font-weight: bold;
+	            float: right;
+	            margin-left: 5px;
+	        }
+
+	        button.accordion.active:after {
+	            content: "\2212";
+	        }
+
+	        div.panel {
+	            padding: 0 18px;
+	            background-color: white;
+	            max-height: 0;
+	            overflow: hidden;
+	            transition: max-height 0.2s ease-out;
+	        }
+        </style>
+	    <script type="text/javascript">
+	        google.charts.load('current', {packages:['corechart']});
+	        google.charts.setOnLoadCallback(drawContinuousDateChart);
+	        var updatedstatresultlist = {{ updatedstatresult|safe}};
+	        var countaxis = {{countaxis|safe}};
+			var updatedata = [];
+			for (i = 0; i < updatedstatresultlist.length;i++) {
+			  var temp=[];
+			  year=updatedstatresultlist[i][0];
+			  mon=updatedstatresultlist[i][1];
+			  monname=updatedstatresultlist[i][2];
+			  upep=updatedstatresultlist[i][3];
+			  uprot=updatedstatresultlist[i][4];
+			  usp=updatedstatresultlist[i][5];
+			  totpep=updatedstatresultlist[i][6];
+			  temp.push(new Date(year, mon, 0));
+			  temp.push(upep);
+			  temp.push(monname+"-"+year+" Peptides based on the current UniProtKB entries:"+upep);
+			  temp.push(uprot);
+			  temp.push(monname+"-"+year+" Proteins based on the current UniProtKB entries:"+uprot);
+			  temp.push(usp);
+			  temp.push(monname+"-"+year+" Species based on the current UniProtKB entries:"+usp);
+			  temp.push(totpep);
+			  temp.push(monname+"-"+year+" Total MRM peptides:"+totpep);
+			  updatedata.push(temp);
+			}
+			function drawContinuousDateChart() {
+			      var data = new google.visualization.DataTable();
+			      data.addColumn('date', 'Date');
+			      data.addColumn('number', 'Peptides based on the current UniProtKB entries');
+			      data.addColumn({type: 'string', role: 'tooltip'});
+			      data.addColumn('number', 'Proteins based on the current UniProtKB entries');
+			      data.addColumn({type: 'string', role: 'tooltip'});
+			      data.addColumn('number', 'Species based on the current UniProtKB entries');
+			      data.addColumn({type: 'string', role: 'tooltip'});
+			      data.addColumn('number', 'Total MRM peptides');
+			      data.addColumn({type: 'string', role: 'tooltip'});
+						data.addRows(updatedata);
+
+			      var options = {
+			      	title: 'Number of entries added in MRMAssayDB',
+			        titleTextStyle: {fontSize:15,italic: true},
+			        pointSize: 0,
+			        hAxis: {title: 'Time', format: 'MMM yyyy',fontSize:15,bold: true,slantedText:true, slantedTextAngle:45,gridlines: {count: countaxis,}},
+			       	vAxis: {title: 'Entries',minValue: 0,fontSize:15,format:'#'},
+			        tooltip: {isHtml: true},
+			        chartArea:{left:80,top:50,bottom:"20%",right:10,width:"100%"},
+			        colors: ['#a52714', '#097138', '#0000FF', '#000000'],
+			        legend: { position: 'top' },
+			        animation: {duration: 1000, easing: 'out',"startup": true}
+			      };
+
+			      var chart = new google.visualization.LineChart(document.getElementById('chart_div'));
+			      chart.draw(data, options);
+		          $(window).resize(function(){
+		            drawContinuousDateChart();
+		          });
+			    }
+	    </script>
+	    <style type="text/css">
+	      .chart {
+	        width: 100%; 
+	        min-height: 450px;
+	      }
+	    </style>
+		<h1>User guide</h1>
+		<ol>
+			<li><a href="#implementation">Implementation</a></li>
+			<li><a href="#datasources">Data sources</a></li>
+			<li><a href="#searching">Searching</a></li>
+			<li><a href="#rest">RESTful services</a></li>
+			<li><a href="#link">Hyperlink</a></li>
+<!-- 			<li><a href="#update">Update status</a></li> -->
+			<li><a href="#cite">How to reference MRMAssayDB?</a></li>
+		</ol>
+
+		<div class="row-fluid spaced-bottom">
+		<div class="span12">
+		<div align="justify"> 
+		<h2 id="implementation">Implementation</h2>
+			<p>
+			MRMAssayDB is implemented in <a href="https://www.python.org/">python 2.7</a>. The user web interface was developed in the <a href="https://djangoproject.com"> Django 1.8.11 </a> framework. The search engine was built with <a href="https://www.elastic.co/"> Elasticsearch</a>.
+			</p>
+			<p>The metadata from <a href="https://www.uniprot.org/"> UniProt</a>, <a href='https://www.kegg.jp' ref='external'>KEGG</a>, <a href='https://string-db.org' ref='external'>STRING</a>, <a href='https://www.ebi.ac.uk/QuickGO/' ref='external'>QuickGO</a> and  <a href='https://www.rcsb.org/pdb/home/home.do' ref='external'>PDB</a> are automatically retrieved via the corresponding API.</p>
+		<h2 id="datasources">Data sources</h2>
+			<p>
+				MRMAssayDB is updated every month and currently it hosts following versions from different resources:
+				<li> <a href='https://assays.cancer.gov/available_assays' ref='external'>CPTAC data</a>. Data retrieved on January 2021</li>
+				<li> <a href='https://panoramaweb.org/project/Panorama%20Public/begin.view?' ref='external'>PanoramaWeb data</a>. Data retrieved on January 2021</li>
+				<li> <a href='https://db.systemsbiology.net/sbeams/cgi/PeptideAtlas/GetSELTransitions?_subtab=5' ref='external'>PASSEL data</a>. Data retrieved on January 2021</li>
+				<li> <a href='http://peptidetracker.proteincentre.com/'>PeptideTracker data</a>. Data retrieved on January 2021</li>
+				<li> <a href='http://www.srmatlas.org/' ref='external'>SRMAtlas data</a>. Data retrieved on January 2021</li>
+				<li> <a href='https://www.uniprot.org/downloads' ref='external'>UniProtKB data</a>. Relase 2020-06-01</li>
+				<li> <a href='ftp://ftp.uniprot.org/pub/databases/uniprot/current_release/knowledgebase/idmapping/idmapping.dat.2015_03.gz' ref='external'>UniProtKB ID conversion data</a>. Relase date  2020-12-02</li>
+				<li> <a href='https://www.disgenet.org/static/disgenet_ap1/files/downloads/all_gene_disease_associations.tsv.gz' ref='external'>DisGeNET data</a>. Version is 7.0, relase data 2020-01-01</li>
+				<li> <a href='https://www.kegg.jp' ref='external'>KEGG pathway data</a>. Relase date 2020-01-01</li>
+				<li> <a href='https://string-db.org' ref='external'>STRING data</a>. Version is 11</li>
+				<li> <a href='https://www.ebi.ac.uk/GOA/downloads' ref='external'>QuickGO data</a>. Relase data 2020-12-01</li>
+				<li> <a href='https://go.drugbank.com/releases/latest' ref='external'>DrugBank data</a>. Version is 5.1.8</li>
+			</p>
+
+		<hr>
+		<h2 id="searching">Searching</h2>
+			<h3> Basic </h3>
+			The database can be searched using the 'search' field located on the <a href="/">homepage</a>. Searching MRMAssayDB can be performed in a following way:
+			<p>By using a search term, like a protein name (e.g. Apolipoprotein L1), UniProtKB accession (e.g. O14791), gene name (e.g. APOL1), Subcellular location (e.g. Secreted), peptide sequence (e.g. ANLQSVPHASASR), organism name (e.g. Homo sapiens), pathway name (e.g. p53 signaling pathway), Disease-causing mutation name (e.g. Focal segmental glomerulosclerosis 4 (FSGS4)), GO ID (e.g. GO:0044267), GO term name (e.g. cellular protein metabolic process), GO term (e.g. Biological Process), or Drug ID (e.g. DB00030) or Human Assays for FDA approved Marker (e.g. Yes) in the search field, and pressing 'submit'.</p>
+			<h3> Advanced </h3>
+			<p>
+			An advanced search option is available in order to select one or more fields to restrict the search and make it faster. The advanced search option is advice to make the search more focused and speed up the total time to report the results to the client side.
+			</p>
+
+			Search results will be reported in an interactive datatable format where users can filter, sort, or download all or part of their MRMAssayDB results. 
+
+			<p>In order to perform an advanced search users can enter the search terms, separated by a '|' or line feedback with each line having one entry (e.g. copy-paste from MS Excel column), into the specific form field. For example, search for one or more UniProtKB Accession(s) (UniProtKB Accession Number field):<br>
+			P09958|P23188 <p>
+			<p>
+			<b>OR</b> simply type:<br>
+			P09958
+			<br>
+			P23188
+			</p>
+			
+			<h3>Using user's own protein sequence database</h3>
+			<h4>How to use this function</h4>
+			<li>The user has the possibility to search the peptide assays in MRMAssaDB using own protein sequences. The is can be done by uploading the list of sequences in one file in the general protein (AA) FASTA format</li>
+			<b>Example</b>
+			<div style="width:100%; ">
+			<pre style="white-space:normal; width:50%; ">
+			>sp|O43715|TRIA1_HUMAN TP53-regulated inhibitor of apoptosis 1 OS=Homo sapiens OX=9606 GN=TRIAP1 PE=1 SV=1
+			<br>
+			MNSVGEACTDMKREYDQCFNRWFAEKFLKGDSSGDPCTDLFKRYQQCVQKAIKEKEIPIE
+			<br>
+			GLEFMGHGKEKPENSS
+			</pre>
+			</div>
+			<li>MRMAssayDB will check and report the presence of peptide assays in the user's protein sequences and report them in  three categories.</li>
+			<li>If present and unique against the user's protein sequences-<b>Present and unique</b>.</li>
+			<li>If present but not unique against the user's sequences-<b>Present but not unique</b>.</li>
+			<li>If not present in the user's sequences-<b>Not present</b> (This term will only appear when user submits FASTA file with the selection of dropdown menu).</li>
+
+			<li>ideally the user should limit the search using additional search terms when using this option.</li>
+
+		<hr>
+		<h2 id="rest">RESTful services</h2>
+				<p>This section describes how to programmatically access data and services from http://mrmassaydb.proteincentre.com.</p>
+
+				<p>The base restful url for MRMAssayDB  is : <code><b>http://mrmassaydb.proteincentre.com/rest/api/</b></code><br>
+				</p>
+				The following multiple arguments are available in the API:<br>
+				<code>UniProtKB Accession</code>
+				<br><code>Protein</code>
+				<br><code>Gene</code>
+				<br><code>Organism</code>
+				<br><code>SubCellular</code>
+				<br><code>Peptide Sequence</code>
+				<br><code>Pathway Name</code>
+				<br><code>Disease Name</code>
+				<br><code>Go ID</code>
+				<br><code>Go Name</code>
+				<br><code>Go Term</code>
+				<br><code>Drug Bank</code>
+				<br><code>Human Assays for FDA approved Marker</code>
+				<br><br>
+				Example:
+				<br> <code>http://mrmassaydb.proteincentre.com/rest/api/?UniProtKB Accession=&Protein=&Gene=&Organism=&SubCellular=&Peptide Sequence=&Pathway Name=&Disease Name=&Go ID=&Go Name=&Go Term=&Drug Bank=&AssayFdaApproveMark=</code>. A CSV file with the MRMAssayDB results will be returned for specified peptide sequence.
+				<br> <code>http://mrmassaydb.proteincentre.com/rest/api/?Gene=APOL1|TP53&Organism=Homo sapiens</code>. A CSV file with the MRMAssayDB results will be returned for specified Gene names and Organism name.<br><br>
+
+				<p>Multiple search terms can be separated by a pipe, i.e. '|', into the specific search field. For example, search for one or more UniProtKB Accession(s) (UniProtKB field):<br>
+				<code>http://mrmassaydb.proteincentre.com/rest/api/?UniProtKB Accession=P09958|P23188</code>. A csv file with the MRMAssayDB results will be returned for specified UniProtKB Accession Number(s).<br><br> <p>
+		<hr>
+		<h2 id="link">Hyperlink</h2>
+				<p>This section describes how to share search results among scientific community from http://mrmassaydb.proteincentre.com.</p>
+
+				<p>The base hyperlink URL for MRMAssayDB  is: <code><b>http://mrmassaydb.proteincentre.com/search/hyperlink/</b></code><br>
+				</p>
+				The following multiple arguments are available in the API:<br>
+				<code>UniProtKB Accession</code>
+				<br><code>Protein</code>
+				<br><code>Gene</code>
+				<br><code>Organism</code>
+				<br><code>SubCellular</code>
+				<br><code>Peptide Sequence</code>
+				<br><code>Pathway Name</code>
+				<br><code>Disease Name</code>
+				<br><code>Go ID</code>
+				<br><code>Go Name</code>
+				<br><code>Go Term</code>
+				<br><code>Drug Bank</code>
+				<br><code>Human Assays for FDA approved Marker</code>
+				<br><br>
+				Example:
+				<br> <code>http://mrmassaydb.proteincentre.com/search/hyperlink/?UniProtKB Accession=&Protein=&Gene=&Organism=&SubCellular=&Peptide Sequence=&Pathway Name=&Disease Name=&Go ID=&Go Name=&Go Term=&Drug Bank=&AssayFdaApproveMark=</code>. A page with the MRMAssayDB results will be displayed for specified peptide sequence.
+				<br> <code>http://mrmassaydb.proteincentre.com/search/hyperlink/?Gene=APOL1|TP53&Organism=Homo sapiens</code>. A page with the MRMAssayDB results will be displayed for specified Gene names and Organism name.<br><br>
+
+				<p>Multiple search terms can be separated by a pipe, i.e. '|', into the specific search field. For example, search for one or more UniProtKB Accession(s) (UniProtKB field):<br>
+				<code>http://mrmassaydb.proteincentre.com/search/hyperlink/?UniProtKB Accession=P09958|P23188</code>. A page with the MRMAssayDB results will be displayed for specified UniProtKB Accession Number(s).<br><br> <p>
+
+		<hr>
+<!-- 		<h2 id="update">Update status</h2>
+			<p>
+			  <div id="chart_div"></div>
+			</p>
+
+		<hr> -->
+		<h2 id="cite">Reference</h2>
+			<p>
+              <a href="https://www.ncbi.nlm.nih.gov/pubmed/29762640">Bhowmick P, Mohammed Y, Borchers CH. MRMAssayDB: an integrated resource for validated targeted proteomics assays. Bioinformatics. 2018</a>
+            </p>
+			<p>
+              <a href="https://pubmed.ncbi.nlm.nih.gov/33683131/">Bhowmick P, Roome S, Borchers CH, Goodlett DR, Mohammed Y. An Update on MRMAssayDB: A Comprehensive Resource for Targeted Proteomics Assays in the Community. J Proteome Res. 2021</a>
+            </p>
+		</div>
+		</div>
+		</div>
+	{% endblock %}

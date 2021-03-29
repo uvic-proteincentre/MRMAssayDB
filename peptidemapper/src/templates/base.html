@@ -1,0 +1,74 @@
+{% load staticfiles %}
+	<!DOCTYPE html>
+		<html lang="en">
+			<head>
+				<meta charset="utf-8">
+				<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+				<meta http-equiv="X-UA-Compatible" content="IE=edge">
+				<!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+				<meta name="description" content="PeptideMapper database">
+				<meta name="author" content="Uvic proteincentre">
+				<link rel='shortcut icon' type='image/x-icon'  href='{% static "img/favicon.ico" %}'/>
+
+				<title> {% block head_title %}MRMAssayDB {% endblock %} </title>
+				{% include 'head_css.html' %}
+				<style>
+					{ % block style %} { % endblock %}
+				</style>
+				<style>
+				.content {
+					display:none;
+				}
+
+				.preload {
+					margin:0;
+					position:absolute;
+					top:50%;
+					left:50%;
+					margin-right: -50%;
+					transform:translate(-50%, -50%);
+				}
+				.jumbotron{
+					padding-top: 1px;
+					padding-bottom: 1px;
+					margin-top: 5px;
+					margin-bottom: 1px;
+					@media (max-width: @screen-md-min) {
+						height: 200px; //Or any value you want
+					}
+				}
+			</style>
+			</head>
+			<body>
+				{% include 'navbar.html' %}
+					<div class="container-fluid">
+						{% block jumbotron %}
+
+						{% endblock %}
+
+						{% block subjumbotron %}
+
+						{% endblock %}
+
+						{% block content %}
+					
+						{% endblock %}
+
+					</div> <!-- /container -->
+					{% include 'bottom.html' %}
+					{% include 'javascript.html' %}
+				<div class="preload">
+					<img src='{% static "img/ajax-loader.gif" %}' />
+				</div>
+
+			</body>
+				<script>
+					$(function() {
+						$(".preload").fadeOut(2000, function() {
+							$(".content").fadeIn(1000);
+						});
+					});
+				</script> 
+		</html>
+
+

@@ -1,0 +1,118 @@
+{%include "base.html" %}
+{% load i18n %}
+    <title> {% block head_title %} Concentration|UVic MRMAssayDB {% endblock %} </title>
+      {% load staticfiles %}
+        <link href="{% static 'css/jquery.dataTables.min.css' %}" rel="stylesheet">
+        <link href="{% static 'css/select.dataTables.min.css' %}" rel="stylesheet">
+        <link href="{% static 'css/buttons.dataTables.min.css' %}" rel="stylesheet"> 
+        
+        <link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet">
+        <link href="{% static 'css/navbar-fixed-top.css' %}" rel="stylesheet">
+
+        <script src="{% static 'js/jquery-1.12.0.min.js' %}"></script>
+        <script src="{% static 'js/jquery.dataTables.min.js' %}"></script>
+
+        <script src="{% static 'js/dataTables.select.min.js' %}"></script>
+        <script src="{% static 'js/dataTables.buttons.min.js' %}"></script>
+        <script src="{% static 'js/buttons.flash.min.js' %}"></script>
+        <script src="{% static 'js/vfs_fonts.js' %}"></script>
+        <script src="{% static 'js/buttons.html5.min.js' %}"></script>    
+    
+
+    
+        <script type="text/javascript" charset="utf-8">
+             $(document).ready(function() {
+                $('table.display').dataTable();
+            } );   
+        </script>
+
+        <style type="text/css">
+            div.dataTables_wrapper {
+                margin-bottom: 3em;
+            }
+        </style>    
+        <style>
+            .table {
+                border-bottom:0px !important;
+                }
+            .table th, .table td {
+                border: 0px !important;
+                }
+            .fixed-table-container {
+                border:0px !important;
+                }
+
+            .blank_row{
+                height: 30px !important; /* Overwrite any previous rules */
+                background-color: #FFFFFF;
+                }
+
+            .tab-content > .tab-pane {
+                display: none;
+                }
+        </style>
+  {% block content %}
+        <div class="container-fluid">
+                {% if foundHits > 0 %}
+                    {% if conclist|length > 0 %}
+
+                        <table  id="example" class="display table-bordered" cellspacing="0" width="100%">
+                            <thead>
+                                <tr>
+                                  <th>UniProtKB Accession</th>
+                                  <th>Protein</th>
+                                  <th>Peptide Sequence</th>
+                                  <th>Mean Conc.<br> </th>
+                                  <th>Min Conc.<br></th>
+                                  <th>Max Conc.<br></th>
+                                  <th>Nr. samples <br> </th>
+                                  <th>Matrix <br> </th>
+                                  <th>Protocol<br> </th>
+                                  <th>Trypsin <br> </th>
+                                  <th>Instrument <br> </th>
+                                  <th>LLOQ <br> </th>
+                                  <th>ULOQ <br> </th>
+                                  </tr>
+                            </thead>
+
+                            <tbody>
+                                {% for items in conclist %}
+                                        <tr>
+                                            <td>{{protList.0}}</td>
+                                            <td>{{protList.1}}</td>
+                                            <td>{{protList.2}}</td>
+                                            <td>{{items.0}}</td>                                    
+                                            <td>{{items.1}}</td>
+                                            <td>{{items.2}}</td>
+                                            <td>{{items.3}}</td>
+                                            <td>{{items.4}}</td>
+                                            {% if items.5 == "DOC-based" %}
+                                                <td><a target="_blank" href='{% static "files/Deoxycholate_plasma_protocol.pdf" %}' >{{items.5}}</a> </td>
+                                            {% endif %}
+                                            {% if items.5 == "Urea-based" %}
+                                                {% if items.4 == "Mouse Plasma" %}
+                                                    <td><a target="_blank" href='{% static "files/Urea_plasma_protocol.pdf" %}' >{{items.5}}</a> </td>
+                                                {% else %}
+                                                    <td><a target="_blank" href='{% static "files/Urea_tissue_protocol.pdf" %}' >Urea-based tissue</a> </td>
+                                                {% endif %}
+                                            {% endif %}
+
+                                            <td>{{items.6}}</td>
+                                            <td>{{items.7}}</td>
+                                            <td>{{items.8}}</td>
+                                            <td>{{items.9}}</td>
+
+                                         </tr>
+                                 {% endfor %}
+                            </tbody>
+                        
+                        </table>
+                    {% else %}
+                        <p>No Concentration data matched with your search criteria.</p>
+                    {% endif %}
+                {% else %}
+                    <p>No Concentration data matched with your search criteria.</p>
+                {% endif %}
+
+        </div>
+  {% endblock %}

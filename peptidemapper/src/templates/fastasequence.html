@@ -1,0 +1,379 @@
+{% include 'base.html' %}
+  {% load staticfiles %}
+  {% load url from future %}
+  {% load crispy_forms_tags %}
+  <title> {% block head_title %} Sequence|UVic MRMAssayDB {% endblock %} </title>
+  {% block content %}
+    {% if reachable %}
+      <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+      <script src="{% static 'js/jquery-1.12.0.min.js' %}"></script>
+      <script src="{% static 'js/jquery-ui.js' %}"></script>
+      <link href="{% static 'css/jquery.dataTables.min.css' %}" rel="stylesheet">
+      <link href="{% static 'css/select.dataTables.min.css' %}" rel="stylesheet">
+      <link href="{% static 'css/jquery-ui.css' %}" rel="stylesheet">
+      <script src="{% static 'js/jquery.dataTables.min.js' %}"></script>
+      <script src="{% static 'js/dataTables.select.min.js' %}"></script>
+      <link rel="stylesheet" href="{% static 'litemol/css/LiteMol-plugin.css' %}" type="text/css" />
+      <script src="{% static 'litemol/js/LiteMol-plugin.js' %}"></script>
+      <script type="text/javascript">
+          var disorderstatlist={{disorderstatlist|safe}};
+          var disdata = [];
+          for (di = 0; di < disorderstatlist.length;di++) {
+            var temp=[];
+            respos=disorderstatlist[di][0];
+            discore=disorderstatlist[di][1];
+            descrip=disorderstatlist[di][2];
+            disarea=disorderstatlist[di][3];
+            dishline=disorderstatlist[di][4];
+            if (respos === "null") {
+              temp.push(null);  
+            } else {
+              temp.push(respos);
+            }
+            if (discore === "null") {
+              temp.push(null);  
+            } else {
+              temp.push(discore);
+            }
+            if (descrip === "null") {
+              temp.push(null);  
+            } else {
+              temp.push(descrip);
+            }
+            if (disarea === "null") {
+              temp.push(null);  
+            } else {
+              temp.push(disarea);
+            }
+            if (dishline === "null") {
+              temp.push(null);  
+            } else {
+              temp.push(dishline);
+            }
+            disdata.push(temp);
+          }
+          function drawChart() {
+              var data = new google.visualization.DataTable();
+              data.addColumn('number', 'X');
+              data.addColumn('number', 'Predicted disorder score');
+              data.addColumn({type: 'string', role: 'tooltip'});
+              data.addColumn('number', 'Area');
+              data.addColumn('number', 'Horizontal Line');
+              data.addRows(disdata);
+              var chart = new google.visualization.ComboChart(document.getElementById('chart_div_disorder'));
+              chart.draw(data, {
+                  tooltip: {isHtml: true},
+                  width: '100%',
+                  height: '100%',
+                  series: {
+                            0: {
+                                type: 'line'
+                            },
+                            1: {
+                                // area series
+                                type: 'area',
+                                enableInteractivity: false,
+                                lineWidth: 0,
+                                color: 'gray'
+                            },
+                            2: {
+                                // horizontal line series
+                                type: 'line',
+                                enableInteractivity: false
+                            }
+                  },
+            
+                  hAxis: {
+                          title: 'Residue position',gridlines:{ color:'transparent' },baseline: 1,viewWindow: {min:1}
+                  },
+                  vAxis: {
+                          title: 'IUPred score',gridlines:{ color:'transparent' }
+                  },
+                  legend: {position: 'none'}
+              });
+          }
+          google.load('visualization', '1', {packages: ['corechart'], callback: drawChart});
+      </script>
+      <script type="text/javascript">
+        $(document).ready(function () {
+          var stringArray = {{pepseqjava|safe}};
+
+          function highlight_words(word, element) {
+            var rgxp = new RegExp(word, 'g');
+            var repl = '<span style="font-weight:bold;color:red;">' + word + '</span>';
+             element.innerHTML = element.innerHTML.replace(rgxp, repl);
+          }
+          $.each(stringArray, function (index, value) {
+            var matchedString = value;
+            var element = document.getElementsByClassName('matchedOn');
+            highlight_words(matchedString, element[0]);
+          });
+
+        });
+      </script>
+      {% if pdbstrucexist == True %}
+      {% endif %}
+
+
+      <style>
+        #app {
+            position: relative;
+            margin-top: 80px;
+            margin-bottom: 400px;
+            width: 640px;
+            height: 480px;
+        } 
+        .table {
+            border-bottom:0px !important;
+        }
+        .table th, .table td {
+            border: 0px !important;
+        }
+        .fixed-table-container {
+            border:0px !important;
+        }
+        .blank_row{
+            height: 30px !important; /* Overwrite any previous rules */
+            background-color: #FFFFFF;
+        }
+
+      </style>
+
+      <style type="text/css">
+        .chart {
+          width: 100%; 
+          min-height: 450px;
+        }
+      </style>
+      <style>
+        button.accordion {
+            background-color: #eee;
+            color: #444;
+            cursor: pointer;
+            padding: 18px;
+            width: 100%;
+            border: none;
+            text-align: left;
+            outline: none;
+            font-size: 15px;
+            transition: 0.4s;
+        }
+
+        button.accordion.active, button.accordion:hover {
+            background-color: #ddd;
+        }
+
+        button.accordion:after {
+            content: '\002B';
+            color: #777;
+            font-weight: bold;
+            float: right;
+            margin-left: 5px;
+        }
+
+        button.accordion.active:after {
+            content: "\2212";
+        }
+
+        div.panel {
+            padding: 0 18px;
+            background-color: white;
+            max-height: 0;
+            overflow: auto;
+            transition: max-height 0.2s ease-out;
+        }
+      </style>
+      <style type="text/css">
+        .modal-header {
+          background-color: #00994C;
+          color: white;
+          border-radius: 5px 5px 0px 0px;
+          margin: 0 auto;
+        }
+
+      </style>
+      <style>
+          .paragraph {
+            border-radius: 6px;
+            display: block;
+            font: 14px/24px "Source Code Pro", Inconsolata, "Lucida Console", Terminal, "Courier New", Courier;
+            padding: 24px 15px;
+            text-align: justify;
+          }
+          header,
+          section,
+          aside,
+          footer {
+            margin: 0 1.5% 24px 1.5%;
+          }
+          section {
+            float: left;
+            width: 30%;
+          }
+      </style>
+      <script type="text/javascript">
+        $(window).load(function(){
+          $(function() {
+            $("#mappertab").tabs();
+          });
+        });
+      </script>
+      <div class="container-fluid">
+        <div align="justify">
+          {% if match_info|length > 0 %}
+            <br/>
+              <table  data-toggle="table" data-striped="true" cellspacing="0" width="100%">
+                <thead>
+                  <tr>
+                    <th>UniProtKB Accession</th>
+                    <th>Start</th>
+                    <th>End</th>
+                    <th>Peptide Sequence</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for  items in match_info %}
+                    <tr>
+                      <td><a target="_blank" href="https://www.uniprot.org/uniprot/{{ key }}">{{ items.0 }}</a></td> 
+                      <td> {{ items.1 }} </td>
+                      <td> {{ items.2 }} </td>
+                      <td> {{ items.3}} </td>
+                    </tr>
+                  {% endfor %}
+                </tbody>
+                <tr class="blank_row">
+                  <td colspan="3"></td>
+                </tr>
+              </table> 
+          {% endif %}
+        </div>
+      </div>
+
+        <div id="mappertab" class="ui-tabs ui-widget ui-widget-content ui-corner-all">
+          <ul class="ui-tabs-nav ui-helper-reset ui-helper-clearfix ui-widget-header ui-corner-all">
+            <li class="ui-state-default ui-corner-top ui-tabs-selected ui-state-active"><a href="#fasta">FASTA</a></li>
+            <li class="ui-state-default ui-corner-top"><a href="#3dstruc">3D Structure</a></li>
+          </ul>
+          <div id="fasta" class="ui-tabs-panel ui-widget-content ui-corner-bottom">
+            <p>
+              <div class="matchedOn">
+                <pre style="word-wrap: break-word; white-space: pre-wrap;">
+{{fasthead}}             
+{{fastasq}}
+                </pre> 
+              </div>
+            </p>
+            <p>Data source:<strong>UniProt</strong> </p>
+            <div class="container-fluid">
+                <div style="width: 100%; float: left; margin: 10px;">
+                 <div id="chart_div_disorder" class="chart" style="width: 100%; height: 100%;"></div>
+                </div>
+            </div>
+            <br>
+            <p>Data source:<strong>IUPred</strong> </p>
+          </div>
+            <div id="3dstruc" class="ui-tabs-panel ui-widget-content ui-corner-bottom">
+            {% if pdbstrucexist == True %}
+              <div>
+                <script type="text/javascript">
+                  var pdbtable;
+                   $(document).ready(function() {
+                        pdbtable = $('#PDBTable').DataTable({
+                            select:{
+                              style:'single'
+                            }
+                        });
+                    });
+                </script>
+                <table id="PDBTable" class="display" cellspacing="0" width="100%">
+                  <thead>
+                    <tr>
+                        <th>PDB Entry</th>
+                        <th>Method</th>
+                        <th>Resolution(Å)</th>
+                        <th>Chain</th>
+                        <th>Positions</th>
+                        <th>Peptide Coverage(%)</th>
+                        <th>Links</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for items in pdbuniprotlist %}
+                      <tr>
+                        <td>{{ items.0 }}</td>
+                        <td>{{ items.1 }}</td>
+                        <td>{{ items.2 }}</td>
+                        <td>{{ items.3 }}</td>
+                        <td>{{ items.4 }}</td>
+                        <td>{{ items.5 }}</td>
+                        <td><a target="_blank" href="https://www.rcsb.org/structure/{{ items.0 }}">RCSB PDB</a></td>
+                      </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+                <div id="app"></div>
+                <script type="text/javascript">
+                    /*
+                     * Copyright (c) 2016 - now David Sehnal, licensed under Apache 2.0, See LICENSE file for more info.
+                     */
+                    var LiteMol;
+
+                    
+                    //var litemolpdbID={{defaultPDBId|safe}};
+                    var litemolpdbID;
+                    //litemolpdbID='1YCR';
+                    litemolpdbID={{defaultPDBId|safe}};
+                    console.log(litemolpdbID);
+                   $(document).ready(function() {
+                      $('#PDBTable tbody').on('click','tr', function () {
+                        var rData=pdbtable.row(this).data(); // get data row
+                        litemolpdbID=rData[0]
+                        console.log(rData[0],litemolpdbID);
+
+                      });
+                    });
+                    (function (LiteMol) {
+                        var SimpleControllerExample;
+                        (function (SimpleControllerExample) {
+                            var plugin = LiteMol.Plugin.create({
+                                target: '#app',
+                                viewportBackground: '#fff',
+                                layoutState: {
+                                    hideControls: true,
+                                    isExpanded: false
+                                },
+                                allowAnalytics: false
+                            });
+                            var id = litemolpdbID;
+
+                            plugin.loadMolecule({
+                                id: id,
+                                format: 'cif',
+                                url: "https://www.ebi.ac.uk/pdbe/static/entry/" + id.toLowerCase() + "_updated.cif",
+                                moleculeRef: id + '-molecule',
+                                modelRef: id + '-model',
+                            }).then(function () {
+                                // Use this (or a modification of this) for custom visualization:
+                                // const style = LiteMol.Bootstrap.Visualization.Molecule.Default.ForType.get('BallsAndSticks');  
+                                // const t = plugin.createTransform();
+                                // t.add(id + '-model', LiteMol.Bootstrap.Entity.Transformer.Molecule.CreateVisual, { style: style })
+                                // plugin.applyTransform(t);
+                                //console.log('Molecule loaded');
+                            }).catch(function (e) {
+                                console.error(e);
+                            });
+                        })(SimpleControllerExample = LiteMol.SimpleControllerExample || (LiteMol.SimpleControllerExample = {}));
+                    })(LiteMol || (LiteMol = {}));
+
+                </script>
+                <p>Data source:<strong>PDB</strong> </p>
+              </div>
+              {% else %}
+               <p>There are no 3D structures avialable for your peptide.</p>
+              {% endif %}
+            </div>
+        </div>
+    {% else %}
+      <p>This data entry is not available due to technical error in connecting to an external data resource. Please try again later.</p>
+    {% endif %}
+  {% endblock %}

@@ -1,0 +1,47 @@
+{%extends "base.html" %}
+	{% load crispy_forms_tags %}
+	{% block head_title %} Contact |{{ block.super }}{% endblock %}
+
+
+	{% block content %}
+		<div class='row'>
+			<div class='col-sm-6 col-sm-offset-3'>
+			 	{% if hide %}
+			 		<h2 class ='text-align-center', style="color: black; padding-top: 50px;"> {{ title }} </h2>
+			 	{% else %} 
+			 		<h2 class ='text-align-center', style="color: black; padding-top: 50px;"> {{ title }} </h2>
+					<form method ='POST' action ='.'> {% csrf_token %}
+						{{form|crispy}}
+						<div class="col-xs-12">
+						<input class="form-control btn btn-primary" , type='submit', value='Send'>
+						</div>
+		
+					</form>
+				{% endif %}
+			</div>
+
+		</div>
+<!-- 			<div class="col-sm-6 col-sm-offset-3">
+				<table>
+					<thead>
+						
+						<th>&nbsp;<h4>&nbsp;Contact Information:</h4></th>
+					</thead>
+					<tbody>
+
+						<tr>
+							<td> &nbsp; <b>Email:</b> bioinformatics@proteincentre.com</td>
+						</tr>
+					</tbody>
+				</table>
+			</div> -->
+
+		</div>
+		<div class='col-sm-6 col-sm-offset-3'>
+			<div style="position:relative">
+				<div class="map" style="left:623px;top:-140px; bottom: 5px;height:205px;width:296px;position: absolute;z-index: 8;"></div>
+			</div>
+		</div>
+	{% endblock %}
+
+

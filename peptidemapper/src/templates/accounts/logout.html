@@ -1,0 +1,7 @@
+{%extends "base.html" %}
+    {% load i18n %}
+    {% load crispy_forms_tags %}
+    {% block head_title %} Logout |{{ block.super }}{% endblock %}
+    {% block content %}
+    	<p> {% trans "Successfully logged out." %}</p>
+    {% endblock %}

@@ -1,0 +1,416 @@
+{%include "base.html" %}
+{% load i18n %}
+    <title> {% block head_title %} Transition|UVic MRMAssayDB {% endblock %} </title>
+
+
+    {% load staticfiles %}
+        <link href="{% static 'css/jquery.dataTables.min.css' %}" rel="stylesheet">
+        <link href="{% static 'css/select.dataTables.min.css' %}" rel="stylesheet">
+        <link href="{% static 'css/buttons.dataTables.min.css' %}" rel="stylesheet"> 
+        
+        <link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet">
+        <link href="{% static 'css/navbar-fixed-top.css' %}" rel="stylesheet">
+
+        <script src="{% static 'js/jquery-1.12.0.min.js' %}"></script>
+        <script src="{% static 'js/jquery.dataTables.min.js' %}"></script>
+
+        <script src="{% static 'js/dataTables.select.min.js' %}"></script>
+        <script src="{% static 'js/dataTables.buttons.min.js' %}"></script>
+        <script src="{% static 'js/buttons.flash.min.js' %}"></script>
+        <script src="{% static 'js/vfs_fonts.js' %}"></script>
+        <script src="{% static 'js/buttons.html5.min.js' %}"></script>    
+    
+
+    
+        <script type="text/javascript" charset="utf-8">
+             $(document).ready(function() {
+                $('table.display').dataTable();
+            } );   
+        </script>
+
+        <style type="text/css">
+            div.dataTables_wrapper {
+                margin-bottom: 3em;
+            }
+        </style>    
+        <style>
+            .table {
+                border-bottom:0px !important;
+                }
+            .table th, .table td {
+                border: 0px !important;
+                }
+            .fixed-table-container {
+                border:0px !important;
+                }
+
+            .blank_row{
+                height: 30px !important; /* Overwrite any previous rules */
+                background-color: #FFFFFF;
+                }
+
+            .tab-content > .tab-pane {
+                display: none;
+                }
+        </style>
+  
+        {% block content %}
+            <div class="container-fluid">
+                {% if foundHits > 0 %}
+                    {% if transdic|length > 0 %}
+                        <br/>
+                            <table  data-toggle="table" data-striped="true" cellspacing="0" width="100%">
+                                <thead>
+                                    <tr>
+                                        <th>UniProtKB Accession</th>
+                                        <th>Protein</th>
+                                        <th>Stripped Peptide Sequence</th>
+                                        <th>Modified Peptide Sequence</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for values in protList %}
+                                        <td> {{ values}} </td>
+                                    {% endfor %}
+                                </tbody>
+                                <tr class="blank_row">
+                                    <td colspan="3"></td>
+                                </tr>
+                            </table>
+
+                            </br>
+                            <p class ='text-align-center'><b>Summary Transition</b></p>                            
+                            <table  id=""  class="display"  cellspacing="0" width="100%">
+                                <thead>
+                                    <tr>
+                                        <th>Resource<br></th>
+                                        <th>Instrument<br></th>
+                                        <th>Charge<br></th>
+                                        <th>Fragment Ion<br></th>
+                                        <th>Frequency<br></th>
+                                    </tr>
+                                </thead>
+                       
+                                <tbody>
+                                    {% for sumitem in summarydata %}
+                                        <tr>
+                                            <td> {{ sumitem.1 }}</td>
+                                            <td> {{ sumitem.0 }}</td>
+                                            <td> {{ sumitem.2 }}</td>
+                                            <td> {{ sumitem.3 }}</td>
+                                            <td> {{ sumitem.4 }}</td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>  
+                        {% for key, value in transdic.items %}
+                            {% if key == "PeptideTracker Transition" %}
+                                <p class ='text-align-center'><b>{{ key }}</b></p>
+                                {% for k,v in value.items %}
+                                    {% if k == "Agilent6490"%}
+                                        </br>
+                                        <table  id=""  class="display"  cellspacing="0" width="100%">
+                                            <thead>
+                                                <tr>
+                                                    <th>Instrument<br></th>
+                                                    <th>Rank<br></th>
+                                                    <th>Heavy<br></th>
+                                                    <th>Precursor Ion m/z<br></th>
+                                                    <th>Collision Energy<br></th>
+                                                    <th>Polarity<br></th>
+                                                    <th>Fragment Ion<br></th>
+                                                    <th>Dwell<br></th>
+                                                    <th>Cell Accelerator Voltage<br></th>
+                                                    <th>Parent Charge State<br></th>
+                                                    <th>Product Ion m/z<br></th>
+                                                    <th>Fragmentor<br></th>
+                                                    <th>Abundance<br></th>
+                                            
+                                                </tr>
+                                            </thead>
+                                   
+                                            <tbody>
+                                                {% for item in v %}
+                                                    <tr>
+                                                        <td> {{ item.0 }}</td>
+                                                        <td> {{ item.1 }}</td>
+                                                        <td> {{ item.2 }}</td>
+                                                        <td> {{ item.3 }}</td>
+                                                        <td> {{ item.4 }}</td>
+                                                        <td> {{ item.5 }}</td>
+                                                        <td> {{ item.6 }}</td>
+                                                        <td> {{ item.7 }}</td>
+                                                        <td> {{ item.8 }}</td>
+                                                        <td> {{ item.9 }}</td>
+                                                        <td> {{ item.10 }}</td>
+                                                        <td> {{ item.11 }}</td>
+                                                        <td> {{ item.12 }}</td>
+                                                    </tr>
+                                                {% endfor %}
+                                            </tbody>
+                                    
+                                        </table>                                       
+                                    {% elif k == "Agilent6495"%}
+                                        </br>
+                                        <table  id=""  class="display"  cellspacing="0" width="100%">
+                                            <thead>
+                                                <tr>
+                                                    <th>Instrument<br></th>
+                                                    <th>Rank<br></th>
+                                                    <th>Heavy<br></th>
+                                                    <th>Precursor Ion m/z<br></th>
+                                                    <th>Collision Energy<br></th>
+                                                    <th>Polarity<br></th>
+                                                    <th>Fragment Ion<br></th>
+                                                    <th>Dwell<br></th>
+                                                    <th>Cell Accelerator Voltage<br></th>
+                                                    <th>Parent Charge State<br></th>
+                                                    <th>Product Ion m/z<br></th>
+                                                    <th>Fragmentor<br></th>
+                                                    <th>Abundance<br></th>
+                                            
+                                                </tr>
+                                            </thead>
+                                   
+                                            <tbody>
+                                                {% for item in v %}
+                                                    <tr>
+                                                        <td> {{ item.0 }}</td>
+                                                        <td> {{ item.1 }}</td>
+                                                        <td> {{ item.2 }}</td>
+                                                        <td> {{ item.3 }}</td>
+                                                        <td> {{ item.4 }}</td>
+                                                        <td> {{ item.5 }}</td>
+                                                        <td> {{ item.6 }}</td>
+                                                        <td> {{ item.7 }}</td>
+                                                        <td> {{ item.8 }}</td>
+                                                        <td> {{ item.9 }}</td>
+                                                        <td> {{ item.10 }}</td>
+                                                        <td> {{ item.11 }}</td>
+                                                        <td> {{ item.12 }}</td>
+                                                    </tr>
+                                                {% endfor %}
+                                            </tbody>
+                                    
+                                        </table>
+                                    {% elif k == "Qtrap4000"%}
+                                        </br>
+                                        <table  id=""  class="display"  cellspacing="0" width="100%">
+                                            <thead>
+                                                <tr>
+                                                    <th>Instrument<br></th>
+                                                    <th>Rank<br></th>
+                                                    <th>Heavy<br></th>
+                                                    <th>Q1<br></th>
+                                                    <th>Q3<br></th>
+                                                    <th>Collision Energy<br></th>
+                                                    <th>Declustering Potential<br></th>
+                                                    <th>Fragment Ion<br></th>
+                                                    <th>Parent Charge State<br></th>
+                                                    <th>Time<br></th>
+                                                    <th>Cell Exit Potential<br></th>
+                                                    <th>Abundance<br></th>
+                                            
+                                                </tr>
+                                            </thead>
+                                   
+                                            <tbody>
+                                                {% for item in v %}
+                                                    <tr>
+                                                        <td> {{ item.0 }}</td>
+                                                        <td> {{ item.1 }}</td>
+                                                        <td> {{ item.2 }}</td>
+                                                        <td> {{ item.3 }}</td>
+                                                        <td> {{ item.4 }}</td>
+                                                        <td> {{ item.5 }}</td>
+                                                        <td> {{ item.6 }}</td>
+                                                        <td> {{ item.7 }}</td>
+                                                        <td> {{ item.8 }}</td>
+                                                        <td> {{ item.9 }}</td>
+                                                        <td> {{ item.10 }}</td>
+                                                        <td> {{ item.11 }}</td>
+                                                    </tr>
+                                                {% endfor %}
+                                            </tbody>
+                                    
+                                        </table>                            
+                                    {% elif k == "Thermo_QExactive"%}
+                                        </br>
+                                        <table  id=""  class="display"  cellspacing="0" width="100%">
+                                            <thead>
+                                                <tr>
+                                                    <th>Instrument<br></th>
+                                                    <th>Rank<br></th>
+                                                    <th>Heavy<br></th>
+                                                    <th>Precursor Ion m/z<br></th>
+                                                    <th>Collision Energy<br></th>
+                                                    <th>Fragment Ion<br></th>
+                                                    <th>Product Charge State<br></th>
+                                                    <th>Parent Charge State<br></th>
+                                                    <th>Product Ion m/z<br></th>
+                                                    <th>Abundance<br></th>
+                                            
+                                                </tr>
+                                            </thead>
+                                   
+                                            <tbody>
+                                                {% for item in v %}
+                                                    <tr>
+                                                        <td> {{ item.0 }}</td>
+                                                        <td> {{ item.1 }}</td>
+                                                        <td> {{ item.2 }}</td>
+                                                        <td> {{ item.3 }}</td>
+                                                        <td> {{ item.4 }}</td>
+                                                        <td> {{ item.5 }}</td>
+                                                        <td> {{ item.6 }}</td>
+                                                        <td> {{ item.7 }}</td>
+                                                        <td> {{ item.8 }}</td>
+                                                        <td> {{ item.9 }}</td>
+                                                    </tr>
+                                                {% endfor %}
+                                            </tbody>
+                                    
+                                        </table>                            
+                                    {% endif %}
+                                {% endfor %}
+                            {% elif key == "Passel Transition" %}
+                                <p class ='text-align-center'><b>{{ key }}</b></p>
+                                {% for k,v in value.items %}
+                                    </br>
+                                    <table  id=""  class="display"  cellspacing="0" width="100%">
+                                        <thead>
+                                            <tr>
+                                                <th>Instrument<br></th>
+                                                <th>Label<br></th>
+                                                <th>Precursor Ion m/z<br></th>
+                                                <th>Collision Energy<br></th>
+                                                <th>Fragment Ion<br></th>
+                                                <th>Parent Charge State<br></th>
+                                                <th>Product Ion m/z<br></th>
+                                        
+                                            </tr>
+                                        </thead>
+                               
+                                        <tbody>
+                                            {% for item in v %}
+                                                <tr>
+                                                    <td> {{ item.0 }}</td>
+                                                    <td> {{ item.1 }}</td>
+                                                    <td> {{ item.2 }}</td>
+                                                    <td> {{ item.3 }}</td>
+                                                    <td> {{ item.4 }}</td>
+                                                    <td> {{ item.5 }}</td>
+                                                    <td> {{ item.6 }}</td>
+                                                </tr>
+                                            {% endfor %}
+                                        </tbody>                                    
+                                    </table>                        
+                                {% endfor %}
+                            {% elif key == "SRMAtlas Transition" %}
+                                <p class ='text-align-center'><b>{{ key }}</b></p>
+                                {% for k,v in value.items %}
+                                    </br>
+                                    <table  id=""  class="display"  cellspacing="0" width="100%">
+                                        <thead>
+                                            <tr>
+                                                <th>Instrument<br></th>
+                                                <th>Precursor Ion m/z<br></th>
+                                                <th>Fragment Ion<br></th>
+                                                <th>Q1 charge<br></th>
+                                                <th>Product Ion m/z<br></th>
+                                                <th>Q3 charge<br></th>
+                                        
+                                            </tr>
+                                        </thead>
+                               
+                                        <tbody>
+                                            {% for item in v %}
+                                                <tr>
+                                                    <td> {{ item.0 }}</td>
+                                                    <td> {{ item.1 }}</td>
+                                                    <td> {{ item.2 }}</td>
+                                                    <td> {{ item.3 }}</td>
+                                                    <td> {{ item.4 }}</td>
+                                                    <td> {{ item.5 }}</td>
+                                                </tr>
+                                            {% endfor %}
+                                        </tbody>                                    
+                                    </table>                        
+                                {% endfor %}
+                            {% elif key == "CPTAC Transitions" %}
+                                <p class ='text-align-center'><b>{{ key }}</b></p>
+                                {% for k,v in value.items %}
+                                    </br>
+                                    <table  id=""  class="display"  cellspacing="0" width="100%">
+                                        <thead>
+                                            <tr>
+                                                <th>Instrument<br></th>
+                                                <th>Label<br></th>
+                                                <th>Precursor Ion m/z<br></th>
+                                                <th>Q1 charge<br></th>
+                                                <th>Fragment Ion<br></th>
+                                                <th>Product Ion m/z<br></th>
+                                                <th>Q3 charge<br></th>
+                                        
+                                            </tr>
+                                        </thead>
+                               
+                                        <tbody>
+                                            {% for item in v %}
+                                                <tr>
+                                                    <td> {{ item.0 }}</td>
+                                                    <td> {{ item.1 }}</td>
+                                                    <td> {{ item.2 }}</td>
+                                                    <td> {{ item.3 }}</td>
+                                                    <td> {{ item.4 }}</td>
+                                                    <td> {{ item.5 }}</td>
+                                                    <td> {{ item.6 }}</td>
+                                                </tr>
+                                            {% endfor %}
+                                        </tbody>                                    
+                                    </table>                        
+                                {% endfor %}
+                            {% elif key == "Panoramaweb Transition" %}
+                                <p class ='text-align-center'><b>{{ key }}</b></p>
+                                {% for k,v in value.items %}
+                                    </br>
+                                    <table  id=""  class="display"  cellspacing="0" width="100%">
+                                        <thead>
+                                            <tr>
+                                                <th>Instrument<br></th>
+                                                <th>Label<br></th>
+                                                <th>Precursor Ion m/z<br></th>
+                                                <th>Q1 charge<br></th>
+                                                <th>Fragment Ion<br></th>
+                                                <th>Product Ion m/z<br></th>
+                                                <th>Q3 charge<br></th>
+                                        
+                                            </tr>
+                                        </thead>
+                               
+                                        <tbody>
+                                            {% for item in v %}
+                                                <tr>
+                                                    <td> {{ item.0 }}</td>
+                                                    <td> {{ item.1 }}</td>
+                                                    <td> {{ item.2 }}</td>
+                                                    <td> {{ item.3 }}</td>
+                                                    <td> {{ item.4 }}</td>
+                                                    <td> {{ item.5 }}</td>
+                                                    <td> {{ item.6 }}</td>
+                                                </tr>
+                                            {% endfor %}
+                                        </tbody>                                    
+                                    </table>                        
+                                {% endfor %}
+                            {% endif %}
+                        {% endfor %}
+                    {% else %}
+                        <p>No Transition data matched with your search criteria.</p>
+                    {% endif %}
+                {% else %}
+                    <p>No Transition data matched with your search criteria.</p>
+                {% endif %}
+            </div>
+
+        {% endblock %}

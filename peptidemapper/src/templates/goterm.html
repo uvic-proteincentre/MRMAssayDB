@@ -1,0 +1,172 @@
+
+{%include "base.html" %}
+    <title> {% block head_title %} GO|UVic MRMAssayDB{% endblock %} </title>
+
+
+    {% load staticfiles %}
+    <link href="{% static 'css/jquery.dataTables.min.css' %}" rel="stylesheet">
+    <link href="{% static 'css/select.dataTables.min.css' %}" rel="stylesheet">
+    <link href="{% static 'css/buttons.dataTables.min.css' %}" rel="stylesheet">    
+    <link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet">
+    <link href="{% static 'css/navbar-fixed-top.css' %}" rel="stylesheet">
+    
+    <script src="{% static 'js/jquery-1.12.0.min.js' %}"></script>
+    <script src="{% static 'js/jquery.dataTables.min.js' %}"></script>
+    <script src="{% static 'js/dataTables.select.min.js' %}"></script>
+    <script src="{% static 'js/dataTables.buttons.min.js' %}"></script>
+    <script src="{% static 'js/buttons.flash.min.js' %}"></script>
+    <script src="{% static 'js/vfs_fonts.js' %}"></script>
+    <script src="{% static 'js/buttons.html5.min.js' %}"></script>
+
+
+    <style> 
+        .my_button_space_class{
+            margin-right :20px; 
+        }
+    </style>
+
+    <script type="text/javascript" charset="utf-8">
+        $(document).ready(function() {
+        // Setup - add a text input to each footer cell
+        $('#example tfoot th').each( function () {
+            var title = $(this).text();
+            $(this).html( '<input type="text" placeholder="Search '+title+'" />' );
+        } );
+ 
+        // DataTable
+        var table = $('#example').DataTable( {
+            'scrollX':true,
+            'scrollY':'650px',
+            'scrollCollapse':true,
+            'dom': 'Blfrtip',
+            'autoWidth':false,
+            buttons:[
+            {
+                extend:'csv',
+                filename: 'GOresultspeptidemapper',
+                text:'Download all',
+                exportOptions:{
+                    columns: [1,2,3,4,5]
+                }
+            },
+            {
+                extend:'csv',
+                filename:'GOresultspeptidemapperselected',
+                text:'Download selected',
+                exportOptions:
+                {
+                    columns: [1,2,3,4,5],
+                    modifier: {selected: true},
+                }
+            }
+            ],
+            columnDefs:[{
+                orderable: false, 
+                className: 'select-checkbox',
+                searchable: false,
+                targets:[0]
+                },
+                {targets: [1,2],
+                    visible: false,
+                    searchable: false
+                }
+            ],
+            select:{
+                style:'multi',
+                selector: 'td:first-child'
+            },
+            order:[[ 1, 'asc' ]]
+        } );
+
+
+        // Apply the search
+        table.columns().every( function () {
+            var that = this;
+    
+            $( 'input', this.footer() ).on( 'keyup change', function () {
+                if ( that.search() !== this.value ) {
+                    that
+                        .search( this.value )
+                        .draw();
+                }
+            } );
+        } );
+    } );
+    </script>
+
+{% block content %}
+    <div class="container-fluid">
+        {% if reachable %}
+            {% if foundHits %}
+                {% if contextgoterminfo %}
+                    <table width="50%">
+                        <thead>
+                            <tr>
+                                <th>UniProtKB Accession</th>
+                                <th>Protein</th>
+                                <th>Gene</th>
+                            </tr>
+                        </thead>
+                       
+                        <tbody>
+                            <tr>
+                                <td><a target="_blank" href="https://www.uniprot.org/uniprot/{{contextgoterminfo.0.0}}">{{contextgoterminfo.0.0}}</a></td>
+                                <td>{{contextgoterminfo.0.1}}</td>
+                                <td>{{contextgoterminfo.0.2}}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                   <style type="text/css">
+                     .gbuff {
+                       margin-top:40px;
+                       margin-bottom:20px;
+                      }
+                    </style>
+                    <div class="gbuff text-info">The datatable below shows the list of Gene Ontology (GO) annotations (excluding Inferred from Electronic Annotation (IEA) evidence) assigned to this protein by <a target="_blank" href="https://www.ebi.ac.uk/QuickGO/annotations?geneProductId={{ uniprotkb }}">QuickGO </a>.</div>
+                    <table  id="example" class="display" cellspacing="0" width="100%">
+                        <thead>
+                            <tr>
+                                <th></th>
+                                <th>UniProtKB Accession</th>
+                                <th>Gene</th>
+                                <th>GO ID</th>
+                                <th>GO Term Name</th>
+                                <th>GO Category</th>
+                            </tr>
+                        </thead>
+                        <tfoot>
+                            <tr>
+                                <th></th>
+                                <th>UniProtKB Accession</th>
+                                <th>Gene</th>
+                                <th>GO ID</th>
+                                <th>GO Term Name</th>
+                                <th>GO Category</th>
+                            </tr>
+                        </tfoot>
+                       
+                        <tbody>
+                                {% for items in contextgoterminfo %}
+                                    <tr>
+                                        <td></td>
+                                        <td><a target="_blank" href="https://www.uniprot.org/uniprot/{{ items.0 }}"> {{ items.0 }}</a></td>
+                                        <td> {{ items.2 }}</td>
+                                        <td><a target="_blank" href="https://www.ebi.ac.uk/QuickGO/GTerm?id={{ items.3 }}">{{ items.3 }}</a></td>
+                                        <td>{{ items.4 }}</td>
+                                        <td>{{ items.5 }}</td>
+                                    </tr>
+                                {% endfor %}
+                        </tbody>
+                    </table>
+                {% else %}
+                    <p>No known functions matched with your search criteria.</p>
+                {% endif %}
+            {% else %}
+                <p>No known functions matched with your search criteria.</p>
+            {% endif %}
+        {% else %}
+          <p>Data not available due to the technical error. Please try again later.</p>
+        {% endif %}
+    </div>
+
+{% endblock %}

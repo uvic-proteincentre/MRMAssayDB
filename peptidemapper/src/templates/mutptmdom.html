@@ -1,0 +1,84 @@
+
+{% include 'base.html' %}
+{% load staticfiles %}
+<title> {% block head_title %} Mutation PTM & Domain|UVic MRMAssayDB {% endblock %} </title>
+{% block content %}
+{% if reachable %}   
+	<link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet">
+	<link href="{% static 'css/navbar-fixed-top.css' %}" rel="stylesheet">
+	<!-- <link href="{% static 'css/main.css' %}" rel="stylesheet"> -->
+<!-- 	<link href="http://ebi-uniprot.github.io/CDN/protvista/css/main.css" rel="stylesheet"/> -->
+
+<script src="{% static 'js/molart.js' %}"></script>
+	<style type="text/css">
+		.gbuff {
+		margin-top:40px;
+		margin-bottom:20px;
+		}
+	</style>
+	<div class="container-fluid">
+		<div align="justify">
+			{% if contextpep %}
+				<br/>
+				<table width="50%">
+					<thead>
+						<tr>
+							<th>UniProtKB Accession</th>
+							<th>Start</th>
+							<th>End</th>
+							<th>Peptide Sequence</th>
+						</tr>
+					</thead>
+			 
+					<tbody>
+						<tr>
+							{% for key, values in contextpep.items %}
+								{% for items in values %}
+									<tr>
+										<td> <a target="_blank" href="https://www.uniprot.org/uniprot/{{ key }}">{{ key }}</a> </td> 
+										<td> {{ items.0 }} </td>
+										<td> {{ items.2 }} </td>
+										<td> {{ items.1}} </td>
+									</tr>
+								{% endfor %}
+							{% endfor %}
+						</tr>
+					</tbody>
+					<tr class="blank_row">
+						<td colspan="3"></td>
+					</tr>
+				</table>
+				{% if jsonmolartstatus > 0 %}
+<!-- 					<div class="gbuff text-info">The image below shows the <b> Sequence Features (ProtVista) </b> for {{ protname }} protein with the suitable MRM peptide highlighted.</div> -->
+					<div id='MRMAssayDBMolArtDiv'/>
+					<script>
+						window.onload = function() {
+							var molart = new MolArt({
+								uniprotId: {{molartuniID|safe}},
+								containerId: 'MRMAssayDBMolArtDiv',
+								//These categories will **not** be rendered at all
+								exclusions: ['SEQUENCE_INFORMATION', 'STRUCTURAL', 'TOPOLOGY', 'MOLECULE_PROCESSING', 'ANTIGEN'],
+								//Your data sources are defined here
+								customDataSource: {
+									url: '/resultFile/jsonData/protvistadataJson/externalLabeledFeatures_',
+									source: 'MRMAssayDB',
+									useExtension: true
+								},
+								categoryOrder: ['TARGETED_PROTEOMICS_ASSAY', 'PROTEOMICS', 'DOMAINS_AND_SITES', 'PTM', 'MUTAGENESIS'],
+								//This feature will be preselected
+								selectedFeature: {
+								begin: {{pepstart|safe}},
+								end: {{pepend|safe}},
+								type: 'MRM'
+								}
+							});
+						}
+					</script>
+				{% endif %}
+			{% endif %}
+		</div>
+	</div>
+{% else %}
+	<p>This data entry is not available due to technical error in connecting to an external data resource. Please try again later.</p>
+{% endif %}
+{% endblock %}

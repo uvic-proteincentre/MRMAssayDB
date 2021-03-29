@@ -1,0 +1,65 @@
+#bullet-example {
+  width: 100%;
+  padding: 60px 80px 80px 80px;
+  font-family: Helvetica, Arial, sans-serif;
+}
+#bullet-example h3, #bullet-example h4 {
+  margin: 0;
+  text-align: center;
+}
+#bullet-example h4 {
+  margin-bottom: 40px;
+}
+#bullet-example chart {
+  height: 40px;
+  width: 80%;
+  margin-bottom: 60px;
+}
+#bullet-example chart.color {
+  margin-bottom: 0;
+}
+#bullet-example guide-x .tick {
+  border-width: 2px;
+  border-color: black;
+}
+#bullet-example dot.comparison {
+  height: 30px;
+  width: 4px;
+  top: calc(50% - (30px / 2));
+  background-color: black;
+  border-radius: 0;
+}
+#bullet-example bar {
+  position: absolute;
+  margin: 0;
+  border: none;
+}
+#bullet-example bar.good {
+  background-color: #e6e6e6;
+}
+#bullet-example bar.ok {
+  background-color: #cccccc;
+}
+#bullet-example bar.bad {
+  background-color: #b3b3b3;
+}
+#bullet-example bar.performance {
+  background-color: black;
+  height: 10px;
+  top: 15px;
+}
+#bullet-example .color .good {
+  background-color: #7dac9f;
+}
+#bullet-example .color .ok {
+  background-color: #e5b060;
+}
+#bullet-example .color .bad {
+  background-color: #dc7062;
+}
+
+*, *:before, *:after {
+  -moz-box-sizing: border-box; 
+  -webkit-box-sizing: border-box; 
+  box-sizing: border-box;
+}
